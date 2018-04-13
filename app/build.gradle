@@ -1,0 +1,80 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'org.greenrobot.greendao'
+
+android {
+    compileSdkVersion 27
+    defaultConfig {
+        applicationId "com.github.ykrank.alipayxposed"
+        minSdkVersion 15
+        targetSdkVersion 27
+        versionCode 1
+        versionName "1.0"
+        vectorDrawables.useSupportLibrary = true
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    dataBinding {
+        enabled = true
+    }
+    dexOptions {
+        preDexLibraries = Boolean.valueOf(System.getProperty('pre-dex-libraries', 'true'))
+    }
+    sourceSets {
+        main.java.srcDirs += 'build/generated/source/greendao'
+    }
+    lintOptions {
+        abortOnError = Boolean.valueOf(System.getProperty('abort-on-error', 'true'))
+        textReport true
+        textOutput 'stdout'
+        disable 'MissingTranslation'
+    }
+    packagingOptions {
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    buildTypes.each {
+        it.buildConfigField "String", "DB_NAME", '"alipay.db"'
+    }
+    flavorDimensions "market"
+    productFlavors {
+        normal{
+            dimension "market"
+            manifestPlaceholders["APP_CHANNEL"] = "normal"
+        }
+    }
+}
+
+kapt {
+    mapDiagnosticLocations = true
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+//    options.compilerArgs << '-Xlint:unchecked,deprecation'
+    options.compilerArgs << "-Xmaxerrs" << "500"
+}
+
+greendao {
+    schemaVersion 1
+}
+
+dependencies {
+    implementation project(path: ':lib')
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation"org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+
+    compileOnly 'de.robv.android.xposed:api:82'
+    compileOnly 'de.robv.android.xposed:api:82:sources'
+}
