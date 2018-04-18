@@ -18,31 +18,31 @@ fun hookLoadWebView(classLoader: ClassLoader) {
             "com.uc.webview.export.WebViewClient", object : XC_MethodHook() {
         @Throws(Throwable::class)
         override fun beforeHookedMethod(param: XC_MethodHook.MethodHookParam) {
-            XposedBridge.log("UcWebView:${param.thisObject}")
-            XposedBridge.log("UcWebViewClient:${param.args[0]}")
+//            XposedBridge.log("UcWebView:${param.thisObject}")
+//            XposedBridge.log("UcWebViewClient:${param.args[0]}")
 //            XposedBridge.log(Exception())
             try {
-                val setting = XposedHelpers.callMethod(param.thisObject, "getSettings")
-                if (setting != null) {
-                    val jsEnable = XposedHelpers.callMethod(setting, "getJavaScriptEnabled")
-                    XposedBridge.log("UcSetting:$setting, jsEnable:$jsEnable")
-                    UcWebViewSettingHook.hookLoadWebViewSetting(setting.javaClass.classLoader)
-                    XposedHelpers.callMethod(setting, "setJavaScriptEnabled", true)
-                }
+//                val setting = XposedHelpers.callMethod(param.thisObject, "getSettings")
+//                if (setting != null) {
+//                    val jsEnable = XposedHelpers.callMethod(setting, "getJavaScriptEnabled")
+//                    XposedBridge.log("UcSetting:$setting, jsEnable:$jsEnable")
+//                    UcWebViewSettingHook.hookLoadWebViewSetting(setting.javaClass.classLoader)
+////                    XposedHelpers.callMethod(setting, "setJavaScriptEnabled", true)
+//                }
                 XposedHelpers.callMethod(param.thisObject, "addJavascriptInterface", MyJavaScriptInterface(), "HTMLOUT")
             } catch (e: Throwable) {
                 XposedBridge.log(e)
             }
         }
     })
-    XposedHelpers.findAndHookMethod(UC_WEBVIEW_API_CLASS, classLoader, "setWebChromeClient",
-            "com.uc.webview.export.WebChromeClient", object : XC_MethodHook() {
-        @Throws(Throwable::class)
-        override fun beforeHookedMethod(param: XC_MethodHook.MethodHookParam) {
-            XposedBridge.log("UcWebView:${param.thisObject}")
-            XposedBridge.log("UcWebChromeClient:${param.args[0]}")
-        }
-    })
+//    XposedHelpers.findAndHookMethod(UC_WEBVIEW_API_CLASS, classLoader, "setWebChromeClient",
+//            "com.uc.webview.export.WebChromeClient", object : XC_MethodHook() {
+//        @Throws(Throwable::class)
+//        override fun beforeHookedMethod(param: XC_MethodHook.MethodHookParam) {
+//            XposedBridge.log("UcWebView:${param.thisObject}")
+//            XposedBridge.log("UcWebChromeClient:${param.args[0]}")
+//        }
+//    })
     XposedHelpers.findAndHookMethod(UC_WEBVIEW_API_CLASS, classLoader, "addJavascriptInterface",
             Object::class.java, String::class.java, object : XC_MethodHook() {
         @Throws(Throwable::class)

@@ -1,6 +1,11 @@
 package com.github.ykrank.alipayxposed;
 
-import java.io.ByteArrayInputStream;
+import android.content.Context;
+import android.widget.Toast;
+
+import org.apache.commons.lang3.ArrayUtils;
+
+import java.util.Arrays;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
@@ -20,7 +25,7 @@ public class HookLogic implements IXposedHookLoadPackage {
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam loadPackageParam) throws Throwable {
-        if (true){
+        if (false) {
             return;
         }
         if ("com.eg.android.AlipayGphone".equals(loadPackageParam.packageName)) {
@@ -44,7 +49,10 @@ public class HookLogic implements IXposedHookLoadPackage {
                             String className = (String) param.args[0];
                             Object result = param.getResult();
                             if (result != null && result instanceof Class) {
-                                if (UcWebViewClientHookKt.UC_WEBVIEW_CLIENT_API_CLASS.equals(className)) {
+                                if (UcWebViewHookKt.UC_WEBVIEW_API_CLASS.equals(className)) {
+                                    XposedBridge.log("Load class:" + ((Class) result).getName());
+                                    UcWebViewHookKt.hookLoadWebView(((Class) result).getClassLoader());
+                                } else if (UcWebViewClientHookKt.UC_WEBVIEW_CLIENT_API_CLASS.equals(className)) {
                                     XposedBridge.log("Load class:" + ((Class) result).getName());
                                     UcWebViewClientHookKt.hookLoadWebViewClient(((Class) result).getClassLoader());
                                 }
@@ -52,16 +60,26 @@ public class HookLogic implements IXposedHookLoadPackage {
                         }
                     });
             //网络加载的数据，目标数据InputStream已被添加额外字段
-            XposedHelpers.findAndHookMethod(ByteArrayInputStream.class, "read",
-                    byte[].class, int.class, int.class, new XC_MethodHook() {
-                        @Override
-                        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                            Object url = XposedHelpers.getAdditionalInstanceField(param.thisObject, UcWebViewClientHookKt.ARG_URL);
-                            if (url != null) {
-                                XposedBridge.log(new Exception());
-                            }
-                        }
-                    });
+//            XposedHelpers.findAndHookMethod(ByteArrayInputStream.class, "read",
+//                    byte[].class, int.class, int.class, new XC_MethodHook() {
+//                        @Override
+//                        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+//                            Object url = XposedHelpers.getAdditionalInstanceField(param.thisObject, UcWebViewClientHookKt.ARG_URL);
+//                            if (url != null) {
+//                                XposedBridge.log(new Exception());
+//                            }
+//                        }
+//                    });
+
+//            XposedHelpers.findAndHookMethod(Toast.class, "makeText",
+//                    Context.class, CharSequence.class, int.class, new XC_MethodHook() {
+//                        @Override
+//                        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+//                            XposedBridge.log("Toast:"+ Arrays.asList(param.args));
+//                            XposedBridge.log(new Exception());
+//                        }
+//                    });
+            H5BridgeHookKt.hookLoadH5Bridge(loadPackageParam.classLoader);
         }
     }
 }
