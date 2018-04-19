@@ -20,7 +20,7 @@ public class HookLogic implements IXposedHookLoadPackage {
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam loadPackageParam) throws Throwable {
-        if (true) {
+        if (false) {
             return;
         }
         if ("com.eg.android.AlipayGphone".equals(loadPackageParam.packageName)) {

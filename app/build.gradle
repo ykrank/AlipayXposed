@@ -84,7 +84,7 @@ dependencies {
 
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'org.jsoup:jsoup:1.11.2'
+    implementation 'org.greenrobot:greendao:3.2.2'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.5'
+    implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.5"
 }
-
-
-apply plugin: 'kotlin-android-extensions'

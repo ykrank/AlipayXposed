@@ -1,11 +1,12 @@
-package com.github.ykrank.alipayxposed.ui
+package com.github.ykrank.alipayxposed.app
 
 import android.content.*
 import android.database.Cursor
 import android.net.Uri
+import com.github.ykrank.alipayxposed.app.data.db.BillDetailsRawDbWrapper
 import com.github.ykrank.alipayxposed.bridge.BillH5ContentValues
 import com.github.ykrank.androidtools.util.L
-import java.util.ArrayList
+import java.util.*
 
 class AlipayContentProvider : ContentProvider() {
 
@@ -23,9 +24,14 @@ class AlipayContentProvider : ContentProvider() {
 
     override fun insert(uri: Uri, values: ContentValues): Uri? {
         val tradeNo = BillH5ContentValues.getTradeNo(values)
+        val content = BillH5ContentValues.getContent(values)
         val nUri = uri.buildUpon().fragment(tradeNo).build()
-        L.d("uri:$uri, nUri:$nUri")
         context.contentResolver.notifyChange(nUri, null)
+
+        if (!tradeNo.isNullOrEmpty() && !content.isNullOrEmpty()) {
+            val billDetailsRaw = BillDetailsRawDbWrapper.parseHtmlToRaw(tradeNo!!, content!!)
+            L.d("$billDetailsRaw")
+        }
         return nUri
     }
 

@@ -35,7 +35,7 @@ fun hookLoadWebViewClient(classLoader: ClassLoader) {
                                     "     type: '${H5_EVENT_MY_HOOK}',\n" +
                                     "     url: '$it' \n" +
                                     "}, function(){\n" +
-                                    "     alert(\"Hook成功\");\n" +
+//                                    "     alert(\"Hook成功\");\n" +
                                     "});;")
                         }, XposedBridge::log)
             }

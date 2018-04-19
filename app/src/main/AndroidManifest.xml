@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.github.ykrank.alipayxposed">
 
+    <!-- see https://code.google.com/p/android/issues/detail?id=170734 -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
     <application
         android:name=".App"
         android:allowBackup="true"
@@ -21,7 +24,7 @@
             android:value="53" />
 
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".app.MainActivity"
             android:exported="true"
             android:launchMode="singleInstance">
             <intent-filter>
@@ -32,7 +35,7 @@
         </activity>
 
         <provider
-            android:name=".ui.AlipayContentProvider"
+            android:name=".app.AlipayContentProvider"
             android:authorities="com.github.ykrank.alipayxposed.provider"
             android:enabled="true"
             android:exported="true"/>

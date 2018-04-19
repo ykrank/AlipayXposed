@@ -38,6 +38,8 @@ fun hookLoadH5Bridge(classLoader: ClassLoader) {
                                         HookedApp.app?.contentResolver?.insert(uri, BillH5ContentValues.createContentValues(tradeNo, content))
                                     }
                                 }
+                                //Disable alert
+                                param.result = false
                             }
                         }
                     }

@@ -2,11 +2,14 @@ package com.github.ykrank.alipayxposed
 
 import android.app.Application
 import android.support.multidex.MultiDexApplication
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.ykrank.androidtools.DefaultAppDataProvider
 import com.github.ykrank.androidtools.GlobalData
 import com.github.ykrank.androidtools.util.L
 
 class App : MultiDexApplication() {
+
+    val objectMapper = ObjectMapper()
 
     override fun onCreate() {
         super.onCreate()
@@ -24,6 +27,6 @@ class App : MultiDexApplication() {
     }
 
     companion object {
-        lateinit var app: Application
+        lateinit var app: App
     }
 }

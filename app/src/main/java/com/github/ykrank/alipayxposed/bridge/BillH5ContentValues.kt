@@ -2,7 +2,7 @@ package com.github.ykrank.alipayxposed.bridge
 
 import android.content.ContentValues
 import android.net.Uri
-import com.github.ykrank.alipayxposed.ui.AlipayContentProvider
+import com.github.ykrank.alipayxposed.app.AlipayContentProvider
 
 object BillH5ContentValues {
 
