@@ -1,4 +1,4 @@
-package com.github.ykrank.alipayxposed
+package com.github.ykrank.alipayxposed.hook
 
 import com.github.ykrank.androidtools.util.RxJavaUtil
 import de.robv.android.xposed.XC_MethodHook
@@ -13,7 +13,7 @@ const val ARG_URL = "arg_url"
 
 fun hookLoadWebViewClient(classLoader: ClassLoader) {
     if (XposedHelpers.findClassIfExists(UC_WEBVIEW_CLIENT_API_CLASS, classLoader) == null) {
-        XposedBridge.log("Could not find $UC_WEBVIEW_CLIENT_API_CLASS")
+        XposedBridge.log("Could not find ${UC_WEBVIEW_CLIENT_API_CLASS}")
         return
     }
     XposedHelpers.findAndHookMethod(UC_WEBVIEW_CLIENT_API_CLASS, classLoader, "onPageFinished",
@@ -32,7 +32,7 @@ fun hookLoadWebViewClient(classLoader: ClassLoader) {
                         .subscribe({
                             XposedHelpers.callMethod(param.args[0], "loadUrl", "javascript:window.AlipayJSBridge.call('toast', {\n" +
                                     "     content: document.getElementsByTagName('body')[0].innerHTML,\n" +
-                                    "     type: '$H5_EVENT_MY_HOOK',\n" +
+                                    "     type: '${H5_EVENT_MY_HOOK}',\n" +
                                     "     url: '$it' \n" +
                                     "}, function(){\n" +
                                     "     alert(\"Hook成功\");\n" +

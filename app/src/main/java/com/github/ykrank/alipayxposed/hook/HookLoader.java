@@ -1,4 +1,4 @@
-package com.github.ykrank.alipayxposed;
+package com.github.ykrank.alipayxposed.hook;
 
 import android.app.Application;
 import android.content.Context;

@@ -1,17 +1,17 @@
-package com.github.ykrank.alipayxposed
+package com.github.ykrank.alipayxposed.hook
 
-import com.github.ykrank.androidtools.util.FileUtil
+import android.content.Intent
+import com.github.ykrank.alipayxposed.bridge.BillH5ContentValues
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedBridge
 import de.robv.android.xposed.XposedHelpers
-import java.io.File
 
 const val H5_PLUGIN_API_CLASS = "com.alipay.mobile.nebulacore.config.H5PluginProxy"
 const val H5_EVENT_MY_HOOK = "my_hook"
 
 fun hookLoadH5Bridge(classLoader: ClassLoader) {
     if (XposedHelpers.findClassIfExists(H5_PLUGIN_API_CLASS, classLoader) == null) {
-        XposedBridge.log("Could not find $H5_PLUGIN_API_CLASS")
+        XposedBridge.log("Could not find ${H5_PLUGIN_API_CLASS}")
         return
     }
     XposedHelpers.findAndHookMethod(H5_PLUGIN_API_CLASS, classLoader, "interceptEvent",
@@ -33,11 +33,9 @@ fun hookLoadH5Bridge(classLoader: ClassLoader) {
                                     val tradeNo = url?.substringAfter("tradeNo=")?.substringBefore("&")
                                     XposedBridge.log("tradeNo:$tradeNo")
                                     if (!tradeNo.isNullOrBlank()) {
-                                        //FIXME 此处是在hook的目标app中运行，需要传出至自己的APP中处理
-                                        val file = File(FileUtil.getDownloadDirectory(App.app), tradeNo)
-                                        XposedBridge.log("Write trade html:${file.absolutePath}")
-                                        file.writeText(content!!)
-                                        XposedBridge.log("interceptEvent h5event: action: $action ,content:${content}")
+                                        XposedBridge.log(HookedApp.app.toString())
+                                        val uri = BillH5ContentValues.getTableUri()
+                                        HookedApp.app?.contentResolver?.insert(uri, BillH5ContentValues.createContentValues(tradeNo, content))
                                     }
                                 }
                             }

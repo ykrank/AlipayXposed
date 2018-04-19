@@ -1,11 +1,6 @@
-package com.github.ykrank.alipayxposed;
+package com.github.ykrank.alipayxposed.hook;
 
-import android.content.Context;
-import android.widget.Toast;
-
-import org.apache.commons.lang3.ArrayUtils;
-
-import java.util.Arrays;
+import android.app.Application;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
@@ -25,7 +20,7 @@ public class HookLogic implements IXposedHookLoadPackage {
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam loadPackageParam) throws Throwable {
-        if (false) {
+        if (true) {
             return;
         }
         if ("com.eg.android.AlipayGphone".equals(loadPackageParam.packageName)) {
@@ -41,6 +36,21 @@ public class HookLogic implements IXposedHookLoadPackage {
                             }
                         }
                     });
+            //Application
+            if (loadPackageParam.isFirstApplication){
+                XposedHelpers.findAndHookMethod(Application.class, "onCreate",
+                        new XC_MethodHook() {
+                            @Override
+                            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                                if (HookedApp.INSTANCE.getApp() == null){
+                                    HookedApp.INSTANCE.setApp((Application) param.thisObject);
+                                    XposedBridge.log("AlipayXposed save application");
+                                } else if (HookedApp.INSTANCE.getApp() != param.thisObject){
+                                    XposedBridge.log("AlipayXposed not same application");
+                                }
+                            }
+                        });
+            }
             //壳中真正的加载类
             XposedHelpers.findAndHookMethod("dalvik.system.DexFile", loadPackageParam.classLoader, "loadClass",
                     String.class, "java.lang.ClassLoader", new XC_MethodHook() {

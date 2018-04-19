@@ -52,7 +52,7 @@ android {
     }
     flavorDimensions "market"
     productFlavors {
-        normal{
+        normal {
             dimension "market"
             manifestPlaceholders["APP_CHANNEL"] = "normal"
         }
@@ -76,11 +76,15 @@ greendao {
 dependencies {
     implementation project(path: ':lib')
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation"org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 
+    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
     compileOnly 'de.robv.android.xposed:api:82'
     compileOnly 'de.robv.android.xposed:api:82:sources'
 
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'org.jsoup:jsoup:1.11.2'
 }
+
+
+apply plugin: 'kotlin-android-extensions'

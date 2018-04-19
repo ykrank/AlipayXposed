@@ -1,4 +1,4 @@
-package com.github.ykrank.alipayxposed
+package com.github.ykrank.alipayxposed.hook
 
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedHelpers

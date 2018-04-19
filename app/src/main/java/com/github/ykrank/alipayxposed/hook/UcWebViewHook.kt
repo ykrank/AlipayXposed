@@ -1,4 +1,4 @@
-package com.github.ykrank.alipayxposed
+package com.github.ykrank.alipayxposed.hook
 
 import android.webkit.JavascriptInterface
 import de.robv.android.xposed.XC_MethodHook
@@ -11,7 +11,7 @@ const val UC_WEBVIEW_API_CLASS = "com.uc.webview.export.WebView" //libandroid-ph
 fun hookLoadWebView(classLoader: ClassLoader) {
     //追踪UcWebview加载数据 com.uc.webview.export.WebView
     if (XposedHelpers.findClassIfExists(UC_WEBVIEW_API_CLASS, classLoader) == null) {
-        XposedBridge.log("Could not find $UC_WEBVIEW_API_CLASS")
+        XposedBridge.log("Could not find ${UC_WEBVIEW_API_CLASS}")
         return
     }
     XposedHelpers.findAndHookMethod(UC_WEBVIEW_API_CLASS, classLoader, "setWebViewClient",
@@ -56,7 +56,7 @@ fun hookLoadWebView(classLoader: ClassLoader) {
 fun hookLoadData(classLoader: ClassLoader) {
     //追踪UcWebview加载数据 com.uc.webview.export.WebView
     if (XposedHelpers.findClassIfExists(UC_WEBVIEW_API_CLASS, classLoader) == null) {
-        XposedBridge.log("Could not find $UC_WEBVIEW_API_CLASS")
+        XposedBridge.log("Could not find ${UC_WEBVIEW_API_CLASS}")
         return
     }
     XposedHelpers.findAndHookMethod(UC_WEBVIEW_API_CLASS, classLoader, "loadData",
