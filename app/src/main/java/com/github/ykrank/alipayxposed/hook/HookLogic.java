@@ -1,6 +1,11 @@
 package com.github.ykrank.alipayxposed.hook;
 
+import android.app.Activity;
 import android.app.Application;
+import android.content.Intent;
+import android.os.Bundle;
+
+import java.util.Arrays;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
@@ -68,6 +73,9 @@ public class HookLogic implements IXposedHookLoadPackage {
                     });
             //Hook nebula
             H5BridgeHookKt.hookLoadH5Bridge(loadPackageParam.classLoader);
+
+//            FragmentHook.INSTANCE.hookCommit(loadPackageParam.classLoader);
+            H5UiHook.hookH5FragmentManager(loadPackageParam.classLoader);
         }
     }
 }

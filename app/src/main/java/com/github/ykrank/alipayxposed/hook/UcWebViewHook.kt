@@ -20,7 +20,7 @@ fun hookLoadWebView(classLoader: ClassLoader) {
         override fun beforeHookedMethod(param: XC_MethodHook.MethodHookParam) {
 //            XposedBridge.log("UcWebView:${param.thisObject}")
 //            XposedBridge.log("UcWebViewClient:${param.args[0]}")
-//            XposedBridge.log(Exception())
+            XposedBridge.log(Exception())
             try {
 //                val setting = XposedHelpers.callMethod(param.thisObject, "getSettings")
 //                if (setting != null) {
@@ -29,7 +29,7 @@ fun hookLoadWebView(classLoader: ClassLoader) {
 //                    UcWebViewSettingHook.hookLoadWebViewSetting(setting.javaClass.classLoader)
 ////                    XposedHelpers.callMethod(setting, "setJavaScriptEnabled", true)
 //                }
-                XposedHelpers.callMethod(param.thisObject, "addJavascriptInterface", MyJavaScriptInterface(), "HTMLOUT")
+//                XposedHelpers.callMethod(param.thisObject, "addJavascriptInterface", MyJavaScriptInterface(), "HTMLOUT")
             } catch (e: Throwable) {
                 XposedBridge.log(e)
             }
@@ -43,14 +43,14 @@ fun hookLoadWebView(classLoader: ClassLoader) {
 //            XposedBridge.log("UcWebChromeClient:${param.args[0]}")
 //        }
 //    })
-    XposedHelpers.findAndHookMethod(UC_WEBVIEW_API_CLASS, classLoader, "addJavascriptInterface",
-            Object::class.java, String::class.java, object : XC_MethodHook() {
-        @Throws(Throwable::class)
-        override fun afterHookedMethod(param: XC_MethodHook.MethodHookParam) {
-            XposedBridge.log("addJavascriptInterface:${param.thisObject}, ${param.args.toList()}")
-//            XposedBridge.log(Exception())
-        }
-    })
+//    XposedHelpers.findAndHookMethod(UC_WEBVIEW_API_CLASS, classLoader, "addJavascriptInterface",
+//            Object::class.java, String::class.java, object : XC_MethodHook() {
+//        @Throws(Throwable::class)
+//        override fun afterHookedMethod(param: XC_MethodHook.MethodHookParam) {
+//            XposedBridge.log("addJavascriptInterface:${param.thisObject}, ${param.args.toList()}")
+////            XposedBridge.log(Exception())
+//        }
+//    })
 }
 
 fun hookLoadData(classLoader: ClassLoader) {

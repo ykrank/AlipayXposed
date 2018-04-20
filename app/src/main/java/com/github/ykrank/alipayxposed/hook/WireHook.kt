@@ -1,6 +1,7 @@
 package com.github.ykrank.alipayxposed.hook
 
 import de.robv.android.xposed.XC_MethodHook
+import de.robv.android.xposed.XposedBridge
 import de.robv.android.xposed.XposedHelpers
 
 fun hookParseData(classLoader: ClassLoader) {
@@ -15,7 +16,7 @@ fun hookParseData(classLoader: ClassLoader) {
                 //                                XposedBridge.log(result.toString());
                 //账单列表
                 if ("com.alipay.mobilebill.common.service.model.pb.QueryListRes" == result.javaClass.name) {
-
+                    XposedBridge.log(Exception())
                 }
             }
         }
