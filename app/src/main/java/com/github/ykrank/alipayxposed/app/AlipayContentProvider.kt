@@ -31,6 +31,7 @@ class AlipayContentProvider : ContentProvider() {
         if (!tradeNo.isNullOrEmpty() && !content.isNullOrEmpty()) {
             val billDetailsRaw = BillDetailsRawDbWrapper.parseHtmlToRaw(tradeNo!!, content!!)
             L.d("$billDetailsRaw")
+            //TODO 保存数据到数据库
         }
         return nUri
     }

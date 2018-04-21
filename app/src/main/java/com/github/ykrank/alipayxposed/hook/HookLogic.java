@@ -1,11 +1,6 @@
 package com.github.ykrank.alipayxposed.hook;
 
-import android.app.Activity;
 import android.app.Application;
-import android.content.Intent;
-import android.os.Bundle;
-
-import java.util.Arrays;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
@@ -25,12 +20,14 @@ public class HookLogic implements IXposedHookLoadPackage {
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam loadPackageParam) throws Throwable {
-        if (false) {
+        if (true) {
             return;
         }
         if ("com.eg.android.AlipayGphone".equals(loadPackageParam.packageName)) {
+            ClassLoader classLoader = loadPackageParam.classLoader;
+
             //防止支付宝检测xposed，如果没用到插件，应该移除这里
-            XposedHelpers.findAndHookMethod("java.lang.ClassLoader", loadPackageParam.classLoader, "loadClass",
+            XposedHelpers.findAndHookMethod("java.lang.ClassLoader", classLoader, "loadClass",
                     String.class, boolean.class, new XC_MethodHook() {
                         @Override
                         protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
@@ -42,22 +39,22 @@ public class HookLogic implements IXposedHookLoadPackage {
                         }
                     });
             //Application
-            if (loadPackageParam.isFirstApplication){
+            if (loadPackageParam.isFirstApplication) {
                 XposedHelpers.findAndHookMethod(Application.class, "onCreate",
                         new XC_MethodHook() {
                             @Override
                             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                                if (HookedApp.INSTANCE.getApp() == null){
+                                if (HookedApp.INSTANCE.getApp() == null) {
                                     HookedApp.INSTANCE.setApp((Application) param.thisObject);
                                     XposedBridge.log("AlipayXposed save application");
-                                } else if (HookedApp.INSTANCE.getApp() != param.thisObject){
+                                } else if (HookedApp.INSTANCE.getApp() != param.thisObject) {
                                     XposedBridge.log("AlipayXposed not same application");
                                 }
                             }
                         });
             }
             //壳中真正的加载类
-            XposedHelpers.findAndHookMethod("dalvik.system.DexFile", loadPackageParam.classLoader, "loadClass",
+            XposedHelpers.findAndHookMethod("dalvik.system.DexFile", classLoader, "loadClass",
                     String.class, "java.lang.ClassLoader", new XC_MethodHook() {
                         @Override
                         protected void afterHookedMethod(MethodHookParam param) throws Throwable {
@@ -67,15 +64,18 @@ public class HookLogic implements IXposedHookLoadPackage {
                                 if (UcWebViewClientHookKt.UC_WEBVIEW_CLIENT_API_CLASS.equals(className)) {
                                     XposedBridge.log("Load class:" + ((Class) result).getName());
                                     UcWebViewClientHookKt.hookLoadWebViewClient(((Class) result).getClassLoader());
+                                } else if (BillListHook.Cls_BillListActivity.equals(className)) {
+                                    XposedBridge.log("Load class:" + ((Class) result).getName());
+                                    BillListHook.INSTANCE.hookBillList(((Class) result).getClassLoader());
                                 }
                             }
                         }
                     });
             //Hook nebula
-            H5BridgeHookKt.hookLoadH5Bridge(loadPackageParam.classLoader);
+            H5BridgeHookKt.hookLoadH5Bridge(classLoader);
 
 //            FragmentHook.INSTANCE.hookCommit(loadPackageParam.classLoader);
-            H5UiHook.hookH5FragmentManager(loadPackageParam.classLoader);
+//            H5UiHook.hookH5FragmentManager(loadPackageParam.classLoader);
         }
     }
 }
