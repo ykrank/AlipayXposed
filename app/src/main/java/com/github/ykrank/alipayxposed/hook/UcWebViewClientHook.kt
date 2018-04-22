@@ -22,7 +22,7 @@ object UcWebViewClientHook {
                 "com.uc.webview.export.WebView", String::class.java, object : XC_MethodHook() {
             @Throws(Throwable::class)
             override fun afterHookedMethod(param: XC_MethodHook.MethodHookParam) {
-                XposedBridge.log("UcClient onPageFinished:" + param.args.toList())
+//                XposedBridge.log("UcClient onPageFinished:" + param.args.toList())
                 val url = param.args[1] as String?
                 if (url != null && url.contains("http") && url.contains("?tradeNo=")) {
                     XposedBridge.log("onPageFinished webview:${param.args[0]}")

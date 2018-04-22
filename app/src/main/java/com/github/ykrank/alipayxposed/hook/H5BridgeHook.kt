@@ -34,11 +34,10 @@ object H5BridgeHook {
                                     val content = XposedHelpers.callMethod(eventParam, "getString", "content") as String?
                                     if (!content.isNullOrBlank()) {
                                         val url = XposedHelpers.callMethod(eventParam, "getString", "url") as String?
-                                        XposedBridge.log("url:$url")
+//                                        XposedBridge.log("url:$url")
                                         val tradeNo = url?.substringAfter("tradeNo=")?.substringBefore("&")
-                                        XposedBridge.log("tradeNo:$tradeNo")
+//                                        XposedBridge.log("tradeNo:$tradeNo")
                                         if (!tradeNo.isNullOrBlank()) {
-                                            XposedBridge.log(HookedApp.app.toString())
                                             val uri = BillH5ContentValues.getTableUri()
                                             HookedApp.app?.contentResolver?.insert(uri, BillH5ContentValues.createContentValues(tradeNo, content))
                                             //返回上一界面
