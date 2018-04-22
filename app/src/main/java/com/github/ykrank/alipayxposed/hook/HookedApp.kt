@@ -11,6 +11,17 @@ object HookedApp {
      */
     val billSingleListItems = hashSetOf<Any>()
     var billListActivityResume = false
+    /**
+     * @see BillListHook.Cls_BillListActivity
+     */
     var billListActivity:WeakReference<Any>?= null
+    /**
+     * @see BillListHook.Cls_BillListAdapter
+     */
     var billListAdapter:WeakReference<Any>?= null
+
+    /**
+     * @see H5BridgeHook.H5_H5PageImpl_CLASS
+     */
+    var h5PageImpl:WeakReference<Any>?= null
 }

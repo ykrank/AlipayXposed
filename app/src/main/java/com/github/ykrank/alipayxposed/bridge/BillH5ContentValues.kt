@@ -16,11 +16,20 @@ object BillH5ContentValues {
         }
     }
 
-    fun getTableUri(): Uri{
+    fun getTableUri(): Uri {
         return Uri.Builder()
                 .scheme("content")
                 .authority(AlipayContentProvider.authorities)
                 .path(AlipayContentProvider.Table_BILL_H5)
+                .build()
+    }
+
+    fun getItemUri(tradeNo: String): Uri {
+        return Uri.Builder()
+                .scheme("content")
+                .authority(AlipayContentProvider.authorities)
+                .path(AlipayContentProvider.Table_BILL_H5)
+                .fragment(tradeNo)
                 .build()
     }
 

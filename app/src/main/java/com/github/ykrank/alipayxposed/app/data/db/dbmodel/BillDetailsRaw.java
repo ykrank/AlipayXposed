@@ -10,7 +10,6 @@ import org.greenrobot.greendao.annotation.Generated;
 
 /**
  * 原始账单详情数据库
- * 使用了ActiveAndroid
  */
 @Entity(nameInDb = "BillDetailsRaw")
 public class BillDetailsRaw {

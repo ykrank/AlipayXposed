@@ -7,7 +7,6 @@ import com.github.ykrank.alipayxposed.app.data.db.dbmodel.BillDetailsRawDao
 import com.github.ykrank.alipayxposed.app.data.db.dbmodel.BillDetailsRawDao.Properties
 import com.github.ykrank.alipayxposed.app.data.db.dbmodel.DaoSession
 import com.github.ykrank.androidtools.util.L
-import io.reactivex.Single
 import org.jsoup.Jsoup
 
 
@@ -22,10 +21,6 @@ class BillDetailsRawDbWrapper(private val appDaoSessionManager: AppDaoSessionMan
 
     private val session: DaoSession
         get() = appDaoSessionManager.daoSession
-
-    val cursor: Single<Cursor>
-        get() = Single.just(dao.queryBuilder())
-                .map { it.buildCursor().query() }
 
     fun getAllList(limit: Int, offset: Int): List<BillDetailsRaw> {
         return dao.queryBuilder()
@@ -43,6 +38,12 @@ class BillDetailsRawDbWrapper(private val appDaoSessionManager: AppDaoSessionMan
                 .where(Properties.TradeNo.eq(tradeNo))
                 .list()
                 .firstOrNull()
+    }
+
+    fun getCursorWithTradeNo(tradeNo: String): Cursor? {
+        return dao.queryBuilder()
+                .where(Properties.TradeNo.eq(tradeNo))
+                .buildCursor().query()
     }
 
     fun save(billDetailsRaw: BillDetailsRaw) {

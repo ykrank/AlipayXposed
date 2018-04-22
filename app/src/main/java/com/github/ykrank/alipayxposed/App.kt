@@ -1,8 +1,14 @@
 package com.github.ykrank.alipayxposed
 
-import android.app.Application
 import android.support.multidex.MultiDexApplication
+import android.support.v7.preference.PreferenceManager
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.ykrank.alipayxposed.app.data.db.AppDaoOpenHelper
+import com.github.ykrank.alipayxposed.app.data.db.AppDaoSessionManager
+import com.github.ykrank.alipayxposed.app.data.db.BillDetailsRawDbWrapper
+import com.github.ykrank.alipayxposed.app.data.pref.AppPreferences
+import com.github.ykrank.alipayxposed.app.data.pref.AppPreferencesImpl
+import com.github.ykrank.alipayxposed.app.data.pref.AppPreferencesManager
 import com.github.ykrank.androidtools.DefaultAppDataProvider
 import com.github.ykrank.androidtools.GlobalData
 import com.github.ykrank.androidtools.util.L
@@ -10,6 +16,9 @@ import com.github.ykrank.androidtools.util.L
 class App : MultiDexApplication() {
 
     val objectMapper = ObjectMapper()
+
+    lateinit var appPref: AppPreferences
+    lateinit var billDb: BillDetailsRawDbWrapper
 
     override fun onCreate() {
         super.onCreate()
@@ -24,6 +33,13 @@ class App : MultiDexApplication() {
         })
 
         L.init(this)
+
+        val pref = PreferenceManager.getDefaultSharedPreferences(this)
+        appPref = AppPreferencesManager(AppPreferencesImpl(this, pref))
+
+        val dbHelper = AppDaoOpenHelper(this, BuildConfig.DB_NAME)
+        val dbManager = AppDaoSessionManager(dbHelper)
+        billDb = BillDetailsRawDbWrapper(dbManager)
     }
 
     companion object {

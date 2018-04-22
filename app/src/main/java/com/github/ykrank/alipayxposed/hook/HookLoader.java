@@ -38,7 +38,7 @@ public class HookLoader implements IXposedHookLoadPackage {
     private static List<String> hostAppPackages = new ArrayList<>();
 
     static {
-        // TODO: Add the package name of application your want to hook!
+        // Add the package name of application your want to hook!
         hostAppPackages.add("com.eg.android.AlipayGphone");
     }
 

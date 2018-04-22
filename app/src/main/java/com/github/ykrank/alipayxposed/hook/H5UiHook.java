@@ -39,6 +39,7 @@ public class H5UiHook {
                     @Override
                     protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                         XposedBridge.log("removeFragment:"+ Arrays.asList(param.args));
+
                     }
                 });
     }

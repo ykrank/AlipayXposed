@@ -3,51 +3,80 @@ package com.github.ykrank.alipayxposed.app
 import android.content.*
 import android.database.Cursor
 import android.net.Uri
-import com.github.ykrank.alipayxposed.app.data.db.BillDetailsRawDbWrapper
-import com.github.ykrank.alipayxposed.bridge.BillH5ContentValues
-import com.github.ykrank.androidtools.util.L
+import com.github.ykrank.alipayxposed.app.contentprovider.BillContentProviderDelegate
+import com.github.ykrank.alipayxposed.app.contentprovider.ContentProviderDelegate
+import com.github.ykrank.alipayxposed.app.contentprovider.AppSettingContentProviderDelegate
 import java.util.*
 
 class AlipayContentProvider : ContentProvider() {
+
+    private val delegates = listOf(BillContentProviderDelegate, AppSettingContentProviderDelegate)
+
+    /**
+     * uri code, ContentProviderDelegate, is item
+     */
+    private val codeDelegateMap = hashMapOf<Int, Pair<ContentProviderDelegate, Boolean>>()
+
+    private val sUriMatcher = UriMatcher(UriMatcher.NO_MATCH).apply {
+        delegates.forEach {
+            addURI(authorities, it.tableName, code)
+            codeDelegateMap[code] = Pair(it, false)
+            code++
+            addURI(authorities, "${it.tableName}/#", code)
+            codeDelegateMap[code] = Pair(it, true)
+            code++
+        }
+    }
 
     override fun onCreate(): Boolean {
         return true
     }
 
     override fun getType(uri: Uri): String? {
-        return when (sUriMatcher.match(uri)) {
-            1 -> "vnd.android.cursor.dir/vnd.$authorities.$Table_BILL_H5"
-            2 -> "vnd.android.cursor.item/vnd.$authorities.$Table_BILL_H5"
-            else -> null
+        val code = sUriMatcher.match(uri)
+        val codeDelegate = codeDelegateMap[code]
+        if (codeDelegate != null) {
+            return if (codeDelegate.second) {
+                "vnd.android.cursor.item/vnd.$authorities.${codeDelegate.first.tableName}"
+            } else {
+                "vnd.android.cursor.dir/vnd.$authorities.${codeDelegate.first.tableName}"
+            }
         }
+        return null
     }
 
     override fun insert(uri: Uri, values: ContentValues): Uri? {
-        val tradeNo = BillH5ContentValues.getTradeNo(values)
-        val content = BillH5ContentValues.getContent(values)
-        val nUri = uri.buildUpon().fragment(tradeNo).build()
-        context.contentResolver.notifyChange(nUri, null)
-
-        if (!tradeNo.isNullOrEmpty() && !content.isNullOrEmpty()) {
-            val billDetailsRaw = BillDetailsRawDbWrapper.parseHtmlToRaw(tradeNo!!, content!!)
-            L.d("$billDetailsRaw")
-            //TODO 保存数据到数据库
+        val code = sUriMatcher.match(uri)
+        val nUri = codeDelegateMap[code]?.first?.insert(uri, values)
+        if (nUri != null) {
+            context.contentResolver.notifyChange(nUri, null)
         }
         return nUri
     }
 
     override fun query(uri: Uri, projection: Array<String>?, selection: String?,
                        selectionArgs: Array<String>?, sortOrder: String?): Cursor? {
-        TODO("Implement this to handle query requests from clients.")
+        val code = sUriMatcher.match(uri)
+        return codeDelegateMap[code]?.first?.query(uri, projection, selection, selectionArgs, sortOrder)
     }
 
     override fun update(uri: Uri, values: ContentValues?, selection: String?,
                         selectionArgs: Array<String>?): Int {
-        TODO("Implement this to handle requests to update one or more rows.")
+        val code = sUriMatcher.match(uri)
+        val count = codeDelegateMap[code]?.first?.update(uri, values, selection, selectionArgs) ?: 0
+        if (count > 0) {
+            context.contentResolver.notifyChange(uri, null)
+        }
+        return count
     }
 
     override fun delete(uri: Uri, selection: String?, selectionArgs: Array<String>?): Int {
-        TODO("Implement this to handle requests to delete one or more rows")
+        val code = sUriMatcher.match(uri)
+        val count = codeDelegateMap[code]?.first?.delete(uri, selection, selectionArgs) ?: 0
+        if (count > 0) {
+            context.contentResolver.notifyChange(uri, null)
+        }
+        return count
     }
 
     //可以使用事务优化
@@ -57,14 +86,12 @@ class AlipayContentProvider : ContentProvider() {
 
     companion object {
         val authorities = "com.github.ykrank.alipayxposed.provider"
+        //账单详情
         val Table_BILL_H5 = "bill_h5"
+        //设置
+        val Table_Setting = "setting"
 
-        private val sUriMatcher = UriMatcher(UriMatcher.NO_MATCH).apply {
-            //bill 表
-            addURI(authorities, Table_BILL_H5, 1)
-            //bill 表 某一行
-            addURI(authorities, "$Table_BILL_H5/#", 2)
-        }
-
+        var code = 1
     }
 }
+

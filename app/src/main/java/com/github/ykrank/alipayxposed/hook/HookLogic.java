@@ -20,7 +20,7 @@ public class HookLogic implements IXposedHookLoadPackage {
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam loadPackageParam) throws Throwable {
-        if (true) {
+        if (false) {
             return;
         }
         if ("com.eg.android.AlipayGphone".equals(loadPackageParam.packageName)) {
@@ -61,9 +61,9 @@ public class HookLogic implements IXposedHookLoadPackage {
                             String className = (String) param.args[0];
                             Object result = param.getResult();
                             if (result != null && result instanceof Class) {
-                                if (UcWebViewClientHookKt.UC_WEBVIEW_CLIENT_API_CLASS.equals(className)) {
+                                if (UcWebViewClientHook.UC_WEBVIEW_CLIENT_API_CLASS.equals(className)) {
                                     XposedBridge.log("Load class:" + ((Class) result).getName());
-                                    UcWebViewClientHookKt.hookLoadWebViewClient(((Class) result).getClassLoader());
+                                    UcWebViewClientHook.INSTANCE.hookLoadWebViewClient(((Class) result).getClassLoader());
                                 } else if (BillListHook.Cls_BillListActivity.equals(className)) {
                                     XposedBridge.log("Load class:" + ((Class) result).getName());
                                     BillListHook.INSTANCE.hookBillList(((Class) result).getClassLoader());
@@ -72,7 +72,7 @@ public class HookLogic implements IXposedHookLoadPackage {
                         }
                     });
             //Hook nebula
-            H5BridgeHookKt.hookLoadH5Bridge(classLoader);
+            H5BridgeHook.INSTANCE.hookLoadH5Bridge(classLoader);
 
 //            FragmentHook.INSTANCE.hookCommit(loadPackageParam.classLoader);
 //            H5UiHook.hookH5FragmentManager(loadPackageParam.classLoader);
