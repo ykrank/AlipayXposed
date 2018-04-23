@@ -1,5 +1,6 @@
 package com.github.ykrank.alipayxposed.hook
 
+import com.github.ykrank.alipayxposed.bridge.AppSettingContentValues
 import com.github.ykrank.alipayxposed.hook.H5BridgeHook.H5_EVENT_MY_HOOK
 import com.github.ykrank.androidtools.util.RxJavaUtil
 import de.robv.android.xposed.XC_MethodHook
@@ -22,24 +23,26 @@ object UcWebViewClientHook {
                 "com.uc.webview.export.WebView", String::class.java, object : XC_MethodHook() {
             @Throws(Throwable::class)
             override fun afterHookedMethod(param: XC_MethodHook.MethodHookParam) {
-//                XposedBridge.log("UcClient onPageFinished:" + param.args.toList())
-                val url = param.args[1] as String?
-                if (url != null && url.contains("http") && url.contains("?tradeNo=")) {
+                AppSettingContentValues.doIfEnable {
+                    //                XposedBridge.log("UcClient onPageFinished:" + param.args.toList())
+                    val url = param.args[1] as String?
+                    if (url != null && url.contains("http") && url.contains("?tradeNo=")) {
 //                    XposedBridge.log("onPageFinished webview:${param.args[0]}")
-                    //boolean com.alipay.mobile.nebulacore.wallet.H5LoggerPlugin.interceptEvent(com.alipay.mobile.h5container.api.H5Event, com.alipay.mobile.h5container.api.H5BridgeContext)
-                    //目前应用中只能支持AlipayJSBridge
-                    Single.just(url)
-                            .delay(1000, TimeUnit.MILLISECONDS)
-                            .compose(RxJavaUtil.iOSingleTransformer())
-                            .subscribe({
-                                XposedHelpers.callMethod(param.args[0], "loadUrl", "javascript:window.AlipayJSBridge.call('toast', {\n" +
-                                        "     content: document.getElementsByTagName('body')[0].innerHTML,\n" +
-                                        "     type: '$H5_EVENT_MY_HOOK',\n" +
-                                        "     url: '$it' \n" +
-                                        "}, function(){\n" +
+                        //boolean com.alipay.mobile.nebulacore.wallet.H5LoggerPlugin.interceptEvent(com.alipay.mobile.h5container.api.H5Event, com.alipay.mobile.h5container.api.H5BridgeContext)
+                        //目前应用中只能支持AlipayJSBridge
+                        Single.just(url)
+                                .delay(1000, TimeUnit.MILLISECONDS)
+                                .compose(RxJavaUtil.iOSingleTransformer())
+                                .subscribe({
+                                    XposedHelpers.callMethod(param.args[0], "loadUrl", "javascript:window.AlipayJSBridge.call('toast', {\n" +
+                                            "     content: document.getElementsByTagName('body')[0].innerHTML,\n" +
+                                            "     type: '$H5_EVENT_MY_HOOK',\n" +
+                                            "     url: '$it' \n" +
+                                            "}, function(){\n" +
 //                                    "     alert(\"Hook成功\");\n" +
-                                        "});;")
-                            }, XposedBridge::log)
+                                            "});;")
+                                }, XposedBridge::log)
+                    }
                 }
             }
         })

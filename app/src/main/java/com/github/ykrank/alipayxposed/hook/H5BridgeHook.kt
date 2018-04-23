@@ -32,32 +32,27 @@ object H5BridgeHook {
                             if (eventParam != null) {
                                 val type = XposedHelpers.callMethod(eventParam, "getString", "type") as String?
                                 if (type == H5_EVENT_MY_HOOK) {
-                                    val content = XposedHelpers.callMethod(eventParam, "getString", "content") as String?
-                                    if (!content.isNullOrBlank()) {
-                                        val url = XposedHelpers.callMethod(eventParam, "getString", "url") as String?
+                                    AppSettingContentValues.doIfEnable {
+                                        val content = XposedHelpers.callMethod(eventParam, "getString", "content") as String?
+                                        if (!content.isNullOrBlank()) {
+                                            val url = XposedHelpers.callMethod(eventParam, "getString", "url") as String?
 //                                        XposedBridge.log("url:$url")
-                                        val tradeNo = url?.substringAfter("tradeNo=")?.substringBefore("&")
+                                            val tradeNo = url?.substringAfter("tradeNo=")?.substringBefore("&")
 //                                        XposedBridge.log("tradeNo:$tradeNo")
-                                        if (!tradeNo.isNullOrBlank()) {
-                                            val uri = BillH5ContentValues.getTableUri()
-                                            if (!content!!.contains("加载中")) {
-                                                HookedApp.app?.contentResolver?.insert(uri, BillH5ContentValues.createContentValues(tradeNo, content))
-                                            }
-                                            val cursor = HookedApp.app?.contentResolver?.query(AppSettingContentValues.getTableUri(),
-                                                    arrayOf(AppSettingContentValues.Key_Enable), null, null, null)
-                                            if (cursor != null) {
-                                                if (cursor.moveToFirst() && cursor.getInt(0) == 1) {
-                                                    //返回上一界面
-                                                    HookedApp.h5PageImpl?.get()?.let {
-                                                        Single.just(it)
-                                                                .delay(100, TimeUnit.MILLISECONDS)
-                                                                .compose(RxJavaUtil.iOSingleTransformer())
-                                                                .subscribe({
-                                                                    XposedHelpers.callMethod(it, "exitPage")
-                                                                }, XposedBridge::log)
-                                                    }
+                                            if (!tradeNo.isNullOrBlank()) {
+                                                val uri = BillH5ContentValues.getTableUri()
+                                                if (!content!!.contains("加载中")) {
+                                                    HookedApp.app?.contentResolver?.insert(uri, BillH5ContentValues.createContentValues(tradeNo, content))
                                                 }
-                                                cursor.close()
+                                                //返回上一界面
+                                                HookedApp.h5PageImpl?.get()?.let {
+                                                    Single.just(it)
+                                                            .delay(100, TimeUnit.MILLISECONDS)
+                                                            .compose(RxJavaUtil.iOSingleTransformer())
+                                                            .subscribe({
+                                                                XposedHelpers.callMethod(it, "exitPage")
+                                                            }, XposedBridge::log)
+                                                }
                                             }
                                         }
                                     }

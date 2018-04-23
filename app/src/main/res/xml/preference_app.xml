@@ -9,4 +9,8 @@
         android:key="@string/pref_key_enable"
         android:title="@string/pref_enable" />
 
+    <Preference
+        android:key="@string/pref_key_parse_bill"
+        android:persistent="false"
+        android:title="@string/pref_parse_bill" />
 </PreferenceScreen>

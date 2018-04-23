@@ -7,6 +7,7 @@ import com.github.ykrank.alipayxposed.app.data.db.dbmodel.BillDetailsRawDao
 import com.github.ykrank.alipayxposed.app.data.db.dbmodel.BillDetailsRawDao.Properties
 import com.github.ykrank.alipayxposed.app.data.db.dbmodel.DaoSession
 import com.github.ykrank.androidtools.util.L
+import io.reactivex.Observable
 import org.jsoup.Jsoup
 
 
@@ -22,11 +23,32 @@ class BillDetailsRawDbWrapper(private val appDaoSessionManager: AppDaoSessionMan
     private val session: DaoSession
         get() = appDaoSessionManager.daoSession
 
-    fun getAllList(limit: Int, offset: Int): List<BillDetailsRaw> {
+    fun getList(limit: Int = 20, offset: Int = 0): List<BillDetailsRaw> {
         return dao.queryBuilder()
                 .limit(limit)
                 .offset(offset)
                 .list()
+    }
+
+    fun getAllList(limit: Int = 20): Observable<List<BillDetailsRaw>> {
+        check(limit > 0)
+        return Observable.just(dao)
+                .flatMap {
+                    val count = dao.count().toInt()
+//                    L.d("Count:$count")
+                    if (count == 0) {
+                        return@flatMap Observable.empty<List<BillDetailsRaw>>()
+                    }
+                    val page = (count - 1) / limit + 1
+//                    L.d("Page:$page")
+                    return@flatMap Observable.range(1, page)
+                            .map { getList(limit, limit * (it - 1)) }
+                }
+
+    }
+
+    fun getCount(): Long {
+        return dao.count()
     }
 
     fun fromCursor(cursor: Cursor): BillDetailsRaw {

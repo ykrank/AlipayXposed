@@ -2,4 +2,5 @@
 <resources>
     <!-- General -->
     <string name="pref_key_enable" translatable="false">pref_key_enable</string>
+    <string name="pref_key_parse_bill" translatable="false">pref_key_parse_bill</string>
 </resources>

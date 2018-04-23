@@ -2,6 +2,7 @@ package com.github.ykrank.alipayxposed.hook
 
 import android.widget.ListView
 import com.github.ykrank.alipayxposed.app.data.db.dbmodel.BillDetailsRawDao
+import com.github.ykrank.alipayxposed.bridge.AppSettingContentValues
 import com.github.ykrank.alipayxposed.bridge.BillH5ContentValues
 import com.github.ykrank.androidtools.extension.toast
 import de.robv.android.xposed.XC_MethodHook
@@ -24,19 +25,21 @@ object BillListHook {
         XposedHelpers.findAndHookMethod(Cls_BillListAdapter, classLoader, "a",
                 List::class.java, object : XC_MethodHook() {
             override fun beforeHookedMethod(param: MethodHookParam) {
-//                XposedBridge.log(Exception("BillListAdapter"))
-//                XposedBridge.log("AddAll:${param.args[0]}")
                 HookedApp.billListAdapter = WeakReference(param.thisObject)
-                (param.args[0] as Collection<Any>).forEach {
-                    HookedApp.billSingleListItems[it] = true
-                }
-                try {
-                    //ListView
-                    val listView = XposedHelpers.getObjectField(param.thisObject, "c") as ListView
-                    checkNextBill(listView)
-                } catch (e: Exception) {
-                    XposedBridge.log(e)
-                    HookedApp.app?.toast("Parse BillListAdapter error")
+                AppSettingContentValues.doIfEnable {
+                    //                XposedBridge.log(Exception("BillListAdapter"))
+//                XposedBridge.log("AddAll:${param.args[0]}")
+                    (param.args[0] as Collection<Any>).forEach {
+                        HookedApp.billSingleListItems[it] = true
+                    }
+                    try {
+                        //ListView
+                        val listView = XposedHelpers.getObjectField(param.thisObject, "c") as ListView
+                        checkNextBill(listView)
+                    } catch (e: Exception) {
+                        XposedBridge.log(e)
+                        HookedApp.app?.toast("Parse BillListAdapter error")
+                    }
                 }
             }
         })
@@ -44,31 +47,32 @@ object BillListHook {
         XposedHelpers.findAndHookMethod(Cls_BillListActivity, classLoader, "onResume",
                 object : XC_MethodHook() {
                     override fun afterHookedMethod(param: MethodHookParam) {
-                        try {
-//                            XposedBridge.log("BillListActivity onResume")
-                            HookedApp.billListActivityResume = true
-                            HookedApp.billListActivity = WeakReference(param.thisObject)
-
-                            //Get BillListAdapter
-                            val adapter = XposedHelpers.getObjectField(param.thisObject, "z")
-                            val clsName = adapter?.javaClass?.name
-                            if (clsName != Cls_BillListAdapter) {
-                                XposedBridge.log("Could not find BillListAdapter:$clsName")
-                                return
-                            }
-                            //Get adapter data
-                            val data = XposedHelpers.getObjectField(adapter, "a")
+                        //XposedBridge.log("BillListActivity onResume")
+                        HookedApp.billListActivityResume = true
+                        HookedApp.billListActivity = WeakReference(param.thisObject)
+                        AppSettingContentValues.doIfEnable {
+                            try {
+                                //Get BillListAdapter
+                                val adapter = XposedHelpers.getObjectField(param.thisObject, "z")
+                                val clsName = adapter?.javaClass?.name
+                                if (clsName != Cls_BillListAdapter) {
+                                    XposedBridge.log("Could not find BillListAdapter:$clsName")
+                                    return@doIfEnable
+                                }
+                                //Get adapter data
+                                val data = XposedHelpers.getObjectField(adapter, "a")
 //                        XposedBridge.log("Adapter data:$data")
-                            (data as Collection<Any>).forEach {
-                                HookedApp.billSingleListItems[it] = true
-                            }
+                                (data as Collection<Any>).forEach {
+                                    HookedApp.billSingleListItems[it] = true
+                                }
 
-                            //ListView
-                            val listView = XposedHelpers.getObjectField(param.thisObject, "d") as ListView
-                            checkNextBill(listView)
-                        } catch (e: Throwable) {
-                            XposedBridge.log(e)
-                            HookedApp.app?.toast("Parse BillListActivity error")
+                                //ListView
+                                val listView = XposedHelpers.getObjectField(param.thisObject, "d") as ListView
+                                checkNextBill(listView)
+                            } catch (e: Throwable) {
+                                XposedBridge.log(e)
+                                HookedApp.app?.toast("Parse BillListActivity error")
+                            }
                         }
                     }
                 })
