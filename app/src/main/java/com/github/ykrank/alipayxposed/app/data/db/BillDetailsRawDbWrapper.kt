@@ -74,7 +74,7 @@ class BillDetailsRawDbWrapper(private val appDaoSessionManager: AppDaoSessionMan
             try {
                 val document = Jsoup.parse(html)
                 result.header = document.getElementsByClass("header-title")[0].text()
-                result.price = document.getElementsByClass("price-sum")[0].text().toFloat()
+                result.price = document.getElementsByClass("price-sum")[0].text().replace(",", "")
                 result.status = document.getElementsByClass("price-status")[0].text()
 
                 val rawJson = mutableMapOf<String, String>()

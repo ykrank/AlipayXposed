@@ -2,6 +2,7 @@ package com.github.ykrank.alipayxposed.hook
 
 import android.app.Application
 import java.lang.ref.WeakReference
+import java.util.concurrent.ConcurrentHashMap
 
 object HookedApp {
     var app: Application? = null
@@ -9,7 +10,7 @@ object HookedApp {
     /**
      * BillListAdapter 中的数据SingleListItem
      */
-    val billSingleListItems = hashSetOf<Any>()
+    val billSingleListItems = ConcurrentHashMap<Any, Boolean>()
     var billListActivityResume = false
     /**
      * @see BillListHook.Cls_BillListActivity

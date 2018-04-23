@@ -2,6 +2,7 @@ package com.github.ykrank.alipayxposed.hook
 
 import android.app.Activity
 import android.os.Bundle
+import com.github.ykrank.alipayxposed.bridge.AppSettingContentValues
 import com.github.ykrank.alipayxposed.bridge.BillH5ContentValues
 import com.github.ykrank.androidtools.util.RxJavaUtil
 import de.robv.android.xposed.XC_MethodHook
@@ -39,15 +40,24 @@ object H5BridgeHook {
 //                                        XposedBridge.log("tradeNo:$tradeNo")
                                         if (!tradeNo.isNullOrBlank()) {
                                             val uri = BillH5ContentValues.getTableUri()
-                                            HookedApp.app?.contentResolver?.insert(uri, BillH5ContentValues.createContentValues(tradeNo, content))
-                                            //返回上一界面
-                                            HookedApp.h5PageImpl?.get()?.let {
-                                                Single.just(it)
-                                                        .delay(100, TimeUnit.MILLISECONDS)
-                                                        .compose(RxJavaUtil.iOSingleTransformer())
-                                                        .subscribe({
-                                                            XposedHelpers.callMethod(it, "exitPage")
-                                                        }, XposedBridge::log)
+                                            if (!content!!.contains("加载中")) {
+                                                HookedApp.app?.contentResolver?.insert(uri, BillH5ContentValues.createContentValues(tradeNo, content))
+                                            }
+                                            val cursor = HookedApp.app?.contentResolver?.query(AppSettingContentValues.getTableUri(),
+                                                    arrayOf(AppSettingContentValues.Key_Enable), null, null, null)
+                                            if (cursor != null) {
+                                                if (cursor.moveToFirst() && cursor.getInt(0) == 1) {
+                                                    //返回上一界面
+                                                    HookedApp.h5PageImpl?.get()?.let {
+                                                        Single.just(it)
+                                                                .delay(100, TimeUnit.MILLISECONDS)
+                                                                .compose(RxJavaUtil.iOSingleTransformer())
+                                                                .subscribe({
+                                                                    XposedHelpers.callMethod(it, "exitPage")
+                                                                }, XposedBridge::log)
+                                                    }
+                                                }
+                                                cursor.close()
                                             }
                                         }
                                     }

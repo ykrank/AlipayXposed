@@ -25,11 +25,11 @@ object UcWebViewClientHook {
 //                XposedBridge.log("UcClient onPageFinished:" + param.args.toList())
                 val url = param.args[1] as String?
                 if (url != null && url.contains("http") && url.contains("?tradeNo=")) {
-                    XposedBridge.log("onPageFinished webview:${param.args[0]}")
+//                    XposedBridge.log("onPageFinished webview:${param.args[0]}")
                     //boolean com.alipay.mobile.nebulacore.wallet.H5LoggerPlugin.interceptEvent(com.alipay.mobile.h5container.api.H5Event, com.alipay.mobile.h5container.api.H5BridgeContext)
                     //目前应用中只能支持AlipayJSBridge
                     Single.just(url)
-                            .delay(300, TimeUnit.MILLISECONDS)
+                            .delay(1000, TimeUnit.MILLISECONDS)
                             .compose(RxJavaUtil.iOSingleTransformer())
                             .subscribe({
                                 XposedHelpers.callMethod(param.args[0], "loadUrl", "javascript:window.AlipayJSBridge.call('toast', {\n" +

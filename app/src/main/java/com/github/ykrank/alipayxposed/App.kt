@@ -2,6 +2,7 @@ package com.github.ykrank.alipayxposed
 
 import android.support.multidex.MultiDexApplication
 import android.support.v7.preference.PreferenceManager
+import com.facebook.stetho.Stetho
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.ykrank.alipayxposed.app.data.db.AppDaoOpenHelper
 import com.github.ykrank.alipayxposed.app.data.db.AppDaoSessionManager
@@ -40,6 +41,8 @@ class App : MultiDexApplication() {
         val dbHelper = AppDaoOpenHelper(this, BuildConfig.DB_NAME)
         val dbManager = AppDaoSessionManager(dbHelper)
         billDb = BillDetailsRawDbWrapper(dbManager)
+
+        Stetho.initializeWithDefaults(this)
     }
 
     companion object {

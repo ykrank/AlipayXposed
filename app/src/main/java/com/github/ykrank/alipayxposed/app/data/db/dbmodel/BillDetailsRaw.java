@@ -34,10 +34,10 @@ public class BillDetailsRaw {
      * 交易订单金额
      */
     @Property(nameInDb = "Price")
-    private float price;
+    private String price;
 
     /**
-     * 交易订单金额
+     * 交易订单状态
      */
     @Property(nameInDb = "Status")
     private String status;
@@ -54,8 +54,8 @@ public class BillDetailsRaw {
     @Property(nameInDb = "RawHtml")
     private String rawHtml;
 
-    @Generated(hash = 1642756403)
-    public BillDetailsRaw(Long id, String tradeNo, String header, float price,
+    @Generated(hash = 1565986341)
+    public BillDetailsRaw(Long id, String tradeNo, String header, String price,
             String status, String rawJson, String rawHtml) {
         this.id = id;
         this.tradeNo = tradeNo;
@@ -94,11 +94,11 @@ public class BillDetailsRaw {
         this.header = header;
     }
 
-    public float getPrice() {
+    public String getPrice() {
         return this.price;
     }
 
-    public void setPrice(float price) {
+    public void setPrice(String price) {
         this.price = price;
     }
 

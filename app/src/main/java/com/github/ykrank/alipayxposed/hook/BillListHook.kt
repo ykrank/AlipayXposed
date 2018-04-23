@@ -1,6 +1,7 @@
 package com.github.ykrank.alipayxposed.hook
 
 import android.widget.ListView
+import com.github.ykrank.alipayxposed.app.data.db.dbmodel.BillDetailsRawDao
 import com.github.ykrank.alipayxposed.bridge.BillH5ContentValues
 import com.github.ykrank.androidtools.extension.toast
 import de.robv.android.xposed.XC_MethodHook
@@ -26,7 +27,9 @@ object BillListHook {
 //                XposedBridge.log(Exception("BillListAdapter"))
 //                XposedBridge.log("AddAll:${param.args[0]}")
                 HookedApp.billListAdapter = WeakReference(param.thisObject)
-                HookedApp.billSingleListItems.addAll(param.args[0] as Collection<Any>)
+                (param.args[0] as Collection<Any>).forEach {
+                    HookedApp.billSingleListItems[it] = true
+                }
                 try {
                     //ListView
                     val listView = XposedHelpers.getObjectField(param.thisObject, "c") as ListView
@@ -56,7 +59,9 @@ object BillListHook {
                             //Get adapter data
                             val data = XposedHelpers.getObjectField(adapter, "a")
 //                        XposedBridge.log("Adapter data:$data")
-                            HookedApp.billSingleListItems.addAll(data as Collection<Any>)
+                            (data as Collection<Any>).forEach {
+                                HookedApp.billSingleListItems[it] = true
+                            }
 
                             //ListView
                             val listView = XposedHelpers.getObjectField(param.thisObject, "d") as ListView
@@ -82,6 +87,7 @@ object BillListHook {
 //        XposedBridge.log("listview:$listView")
         goNextH5()?.let {
             if (!it) {
+                XposedBridge.log("账单数据处理完成")
                 HookedApp.app?.toast("账单数据处理完成")
             }
         }
@@ -93,11 +99,11 @@ object BillListHook {
      */
     fun goNextH5(): Boolean? {
         if (HookedApp.billListActivityResume) {
-//            XposedBridge.log("billSingleListItems: ${HookedApp.billSingleListItems}")
-            HookedApp.billSingleListItems.find {
-                isItemUndo(it)
-            }?.let {
-                goBillH5Page(it)
+//            XposedBridge.log("billSingleListItems: ${HookedApp.billSingleListItems.size}")
+            HookedApp.billSingleListItems.keys.find {
+                !isItemParsed(it)
+            }?.apply {
+                goBillH5Page(this)
                 return true
             }
             return false
@@ -108,19 +114,31 @@ object BillListHook {
     }
 
     /**
-     * item是否未被处理过。即是否已解析保存在数据库中。
+     * item是否已被处理过。即是否已解析保存在数据库中。
      * @param item SingleListItem
      */
-    fun isItemUndo(item: Any): Boolean {
+    fun isItemParsed(item: Any): Boolean {
         val tradeNo = XposedHelpers.getObjectField(item, "bizInNo") as String?
         if (tradeNo.isNullOrEmpty()) {
-            return false
+            //首部月份Item
+            val recordType = XposedHelpers.getObjectField(item, "recordType")
+            if ("MONTH" != recordType?.toString()) {
+                XposedBridge.log("Null tradeNo: $item")
+            }
+            return true
         }
         val uri = BillH5ContentValues.getItemUri(tradeNo!!)
         val cursor = HookedApp.app?.contentResolver?.query(uri, null, null, null, null)
-        val count = cursor?.count ?: 0
+        if (cursor != null && cursor.moveToFirst()) {
+            val index = cursor.getColumnIndex(BillDetailsRawDao.Properties.RawHtml.columnName)
+            val content = cursor.getString(index)
+            if (content == null || !content.contains("加载中")) {
+                cursor.close()
+                return true
+            }
+        }
         cursor?.close()
-        return count == 0
+        return false
     }
 
     /**

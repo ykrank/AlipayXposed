@@ -23,7 +23,7 @@ object AppSettingContentProviderDelegate : ContentProviderDelegate {
     override fun query(uri: Uri, projection: Array<String>?, selection: String?, selectionArgs: Array<String>?, sortOrder: String?): Cursor? {
         if (projection?.get(0) == AppSettingContentValues.Key_Enable) {
             return MatrixCursor(arrayOf(AppSettingContentValues.Key_Enable)).apply {
-                addRow(arrayOf(App.app.appPref.enable))
+                addRow(arrayOf(if (App.app.appPref.enable) 1 else 0))
             }
         }
         return null

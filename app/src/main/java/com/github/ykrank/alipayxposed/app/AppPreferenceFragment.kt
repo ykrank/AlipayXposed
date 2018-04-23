@@ -14,7 +14,7 @@ import com.github.ykrank.androidtools.ui.LibBasePreferenceFragment
  */
 class AppPreferenceFragment : LibBasePreferenceFragment() {
 
-    override fun onCreatePreferences(bundle: Bundle, s: String) {
+    override fun onCreatePreferences(bundle: Bundle?, s: String?) {
         addPreferencesFromResource(R.xml.preference_app)
     }
 
