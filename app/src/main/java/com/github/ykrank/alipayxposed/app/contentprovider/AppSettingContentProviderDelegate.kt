@@ -2,11 +2,9 @@ package com.github.ykrank.alipayxposed.app.contentprovider
 
 import android.content.ContentValues
 import android.database.Cursor
-import android.database.MatrixCursor
 import android.net.Uri
-import com.github.ykrank.alipayxposed.App
 import com.github.ykrank.alipayxposed.app.AlipayContentProvider
-import com.github.ykrank.alipayxposed.bridge.AppSettingContentValues
+import com.github.ykrank.alipayxposed.bridge.AppSetting
 
 object AppSettingContentProviderDelegate : ContentProviderDelegate {
     override val tableName: String
@@ -21,12 +19,7 @@ object AppSettingContentProviderDelegate : ContentProviderDelegate {
     }
 
     override fun query(uri: Uri, projection: Array<String>?, selection: String?, selectionArgs: Array<String>?, sortOrder: String?): Cursor? {
-        if (projection?.get(0) == AppSettingContentValues.Key_Enable) {
-            return MatrixCursor(arrayOf(AppSettingContentValues.Key_Enable)).apply {
-                addRow(arrayOf(if (App.app.appPref.enable) 1 else 0))
-            }
-        }
-        return null
+        return AppSetting.fromPref().toCursor()
     }
 
     override fun update(uri: Uri, values: ContentValues?, selection: String?, selectionArgs: Array<String>?): Int {

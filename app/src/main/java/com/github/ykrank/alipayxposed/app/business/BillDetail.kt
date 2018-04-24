@@ -51,6 +51,10 @@ class BillDetail {
     var tansOutInstruction: String? = null
     @JsonProperty("转入账户")
     var transferAccount: String? = null
+    @JsonProperty("理由")
+    var reason: String? = null
+    @JsonProperty("到账时间")
+    var arrivalTime: String? = null
     //购物
     @JsonProperty("订单金额")
     var billAmount: String? = null
@@ -83,7 +87,8 @@ class BillDetail {
     //退款
     @JsonProperty("退款方式")
     var refundMethod: String? = null
-    @JsonProperty("关联记录") //TODO 这里是关联的交易，此时那交易的状态应是 交易关闭 eg:2018-03-23 08:51
+    //这里是关联的交易，此时那交易的状态应是 交易关闭，两者订单号相同
+    @JsonProperty("关联记录")
     var linkBill: String? = null
     //缴费 "账单分类":"消费-住房缴费"
     @JsonProperty("缴费说明")
@@ -97,8 +102,20 @@ class BillDetail {
     @JsonProperty("收款方式")
     var receiptMethod: String? = null
     @JsonProperty("转账备注")
-    var ransferNotes: String? = null
-
+    var transferNotes: String? = null
+    //收红包 "账单分类":"奖金"
+    @JsonProperty("红包来自")
+    var redEnvelopeFrom: String? = null
+    //优惠
+    @JsonProperty("支付宝立减")
+    var alipayDeduction: String? = null
+    @JsonProperty("商家折扣")
+    var businessDiscount: String? = null
+    //提现
+    @JsonProperty("提现说明")
+    var withdrawInstruction: String? = null
+    @JsonProperty("提现到")
+    var withdrawTo: String? = null
 
 
     enum class Status(val content: String) {
@@ -106,7 +123,8 @@ class BillDetail {
         Status_Closed("交易关闭"),
         Status_Wait_Delivery("等待确认收货"),
         Repayment_Success("还款成功"),
-        Refund_Success("退款成功")
+        Refund_Success("退款成功"),
+        Transfer_Success("转出成功")
     }
 
     companion object {

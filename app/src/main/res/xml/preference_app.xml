@@ -9,6 +9,11 @@
         android:key="@string/pref_key_enable"
         android:title="@string/pref_enable" />
 
+    <SwitchPreference
+        android:defaultValue="@bool/pref_debug_bill_details_default_value"
+        android:key="@string/pref_key_debug_bill_detail"
+        android:title="@string/pref_debug_bill_detail" />
+
     <Preference
         android:key="@string/pref_key_parse_bill"
         android:persistent="false"

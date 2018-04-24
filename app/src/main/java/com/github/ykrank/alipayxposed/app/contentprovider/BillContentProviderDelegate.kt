@@ -36,16 +36,10 @@ object BillContentProviderDelegate : ContentProviderDelegate {
     }
 
     override fun update(uri: Uri, values: ContentValues?, selection: String?, selectionArgs: Array<String>?): Int {
-        if (values != null) {
-            AppSettingContentValues.isEnable(values)?.let {
-                App.app.appPref.enable = it
-                return 1
-            }
-        }
-        return 0
+        throw NotImplementedError("Could not update bill db")
     }
 
     override fun delete(uri: Uri, selection: String?, selectionArgs: Array<String>?): Int {
-        throw NotImplementedError("Could not delete setting")
+        throw NotImplementedError("Could not delete bill db")
     }
 }

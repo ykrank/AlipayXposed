@@ -2,6 +2,7 @@
 <resources>
     <!-- General -->
     <string name="pref_key_enable" translatable="false">pref_key_enable</string>
+    <string name="pref_key_debug_bill_detail" translatable="false">pref_key_debug_bill_detail</string>
     <string name="pref_key_parse_bill" translatable="false">pref_key_parse_bill</string>
     <!-- Backup -->
     <string name="pref_key_backup_backup" translatable="false">pref_key_backup_backup</string>

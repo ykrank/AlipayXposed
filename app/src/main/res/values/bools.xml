@@ -2,4 +2,5 @@
 <resources>
 
     <bool name="pref_enable_default_value">false</bool>
+    <bool name="pref_debug_bill_details_default_value">false</bool>
 </resources>

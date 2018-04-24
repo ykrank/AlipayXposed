@@ -2,7 +2,7 @@ package com.github.ykrank.alipayxposed.hook
 
 import android.app.Activity
 import android.os.Bundle
-import com.github.ykrank.alipayxposed.bridge.AppSettingContentValues
+import com.github.ykrank.alipayxposed.bridge.AppSetting
 import com.github.ykrank.alipayxposed.bridge.BillH5ContentValues
 import com.github.ykrank.androidtools.util.RxJavaUtil
 import de.robv.android.xposed.XC_MethodHook
@@ -32,19 +32,26 @@ object H5BridgeHook {
                             if (eventParam != null) {
                                 val type = XposedHelpers.callMethod(eventParam, "getString", "type") as String?
                                 if (type == H5_EVENT_MY_HOOK) {
-                                    AppSettingContentValues.doIfEnable {
-                                        val content = XposedHelpers.callMethod(eventParam, "getString", "content") as String?
-                                        if (!content.isNullOrBlank()) {
-                                            val url = XposedHelpers.callMethod(eventParam, "getString", "url") as String?
+                                    //Disable alert
+                                    param.result = false
+
+                                    val setting = AppSetting.remoteQuery()
+                                    if (setting?.enable != true) {
+                                        return
+                                    }
+                                    val content = XposedHelpers.callMethod(eventParam, "getString", "content") as String?
+                                    if (!content.isNullOrBlank()) {
+                                        val url = XposedHelpers.callMethod(eventParam, "getString", "url") as String?
 //                                        XposedBridge.log("url:$url")
-                                            val tradeNo = url?.substringAfter("tradeNo=")?.substringBefore("&")
+                                        val tradeNo = url?.substringAfter("tradeNo=")?.substringBefore("&")
 //                                        XposedBridge.log("tradeNo:$tradeNo")
-                                            if (!tradeNo.isNullOrBlank()) {
-                                                val uri = BillH5ContentValues.getTableUri()
-                                                if (!content!!.contains("加载中")) {
-                                                    HookedApp.app?.contentResolver?.insert(uri, BillH5ContentValues.createContentValues(tradeNo, content))
-                                                }
-                                                //返回上一界面
+                                        if (!tradeNo.isNullOrBlank()) {
+                                            val uri = BillH5ContentValues.getTableUri()
+                                            if (!content!!.contains("加载中")) {
+                                                HookedApp.app?.contentResolver?.insert(uri, BillH5ContentValues.createContentValues(tradeNo, content))
+                                            }
+                                            //返回上一界面
+                                            if (!setting.debugBillDetail) {
                                                 HookedApp.h5PageImpl?.get()?.let {
                                                     Single.just(it)
                                                             .delay(100, TimeUnit.MILLISECONDS)
@@ -56,8 +63,7 @@ object H5BridgeHook {
                                             }
                                         }
                                     }
-                                    //Disable alert
-                                    param.result = false
+
                                 }
                             }
                         }
