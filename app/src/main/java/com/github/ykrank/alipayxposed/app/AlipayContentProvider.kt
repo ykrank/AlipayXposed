@@ -3,6 +3,7 @@ package com.github.ykrank.alipayxposed.app
 import android.content.*
 import android.database.Cursor
 import android.net.Uri
+import com.github.ykrank.alipayxposed.BuildConfig
 import com.github.ykrank.alipayxposed.app.contentprovider.BillContentProviderDelegate
 import com.github.ykrank.alipayxposed.app.contentprovider.ContentProviderDelegate
 import com.github.ykrank.alipayxposed.app.contentprovider.AppSettingContentProviderDelegate
@@ -85,7 +86,7 @@ class AlipayContentProvider : ContentProvider() {
     }
 
     companion object {
-        val authorities = "com.github.ykrank.alipayxposed.provider"
+        val authorities = "${BuildConfig.APPLICATION_ID}.alipayprovider"
         //账单详情
         val Table_BILL_H5 = "bill_h5"
         //设置

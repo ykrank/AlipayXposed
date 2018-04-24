@@ -20,6 +20,7 @@ class App : MultiDexApplication() {
 
     lateinit var appPref: AppPreferences
     lateinit var billDb: BillDetailsRawDbWrapper
+    lateinit var dbSessionManager:AppDaoSessionManager
 
     override fun onCreate() {
         super.onCreate()
@@ -39,8 +40,8 @@ class App : MultiDexApplication() {
         appPref = AppPreferencesManager(AppPreferencesImpl(this, pref))
 
         val dbHelper = AppDaoOpenHelper(this, BuildConfig.DB_NAME)
-        val dbManager = AppDaoSessionManager(dbHelper)
-        billDb = BillDetailsRawDbWrapper(dbManager)
+        dbSessionManager = AppDaoSessionManager(dbHelper)
+        billDb = BillDetailsRawDbWrapper(dbSessionManager)
 
         Stetho.initializeWithDefaults(this)
     }

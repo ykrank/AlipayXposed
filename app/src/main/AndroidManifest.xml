@@ -36,7 +36,7 @@
 
         <provider
             android:name=".app.AlipayContentProvider"
-            android:authorities="com.github.ykrank.alipayxposed.provider"
+            android:authorities="${applicationId}.alipayprovider"
             android:enabled="true"
             android:exported="true"/>
     </application>
