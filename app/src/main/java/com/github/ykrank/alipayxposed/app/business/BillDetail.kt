@@ -80,13 +80,33 @@ class BillDetail {
     //给收款 付款
     @JsonProperty("收款理由")
     var receiptReason: String? = null
+    //退款
+    @JsonProperty("退款方式")
+    var refundMethod: String? = null
+    @JsonProperty("关联记录") //TODO 这里是关联的交易，此时那交易的状态应是 交易关闭 eg:2018-03-23 08:51
+    var linkBill: String? = null
+    //缴费 "账单分类":"消费-住房缴费"
+    @JsonProperty("缴费说明")
+    var paymentInstruction: String? = null
+    @JsonProperty("户号")
+    var portalNumber: String? = null
+    //发红包 "账单分类":"人情往来"
+    @JsonProperty("红包说明")
+    var redEnvelopeInstruction: String? = null
+    //收款
+    @JsonProperty("收款方式")
+    var receiptMethod: String? = null
+    @JsonProperty("转账备注")
+    var ransferNotes: String? = null
+
 
 
     enum class Status(val content: String) {
         Status_Success("交易成功"),
         Status_Closed("交易关闭"),
         Status_Wait_Delivery("等待确认收货"),
-        Repayment_Success("还款成功")
+        Repayment_Success("还款成功"),
+        Refund_Success("退款成功")
     }
 
     companion object {

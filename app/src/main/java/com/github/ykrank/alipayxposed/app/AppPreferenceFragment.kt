@@ -31,7 +31,13 @@ class AppPreferenceFragment : LibBasePreferenceFragment(), Preference.OnPreferen
         findPreference(getString(R.string.pref_key_backup_backup)).onPreferenceClickListener = this
         findPreference(getString(R.string.pref_key_backup_restore)).onPreferenceClickListener = this
 
-        backupAgent = BackupDelegate(activity, "AlipayXposed_v${BuildConfig.VERSION_CODE}.bak", BuildConfig.DB_NAME)
+        backupAgent = BackupDelegate(activity, "AlipayXposed_v${BuildConfig.VERSION_CODE}.bak",
+                BuildConfig.DB_NAME, afterRestore = object : BackupDelegate.DefaultAfterRestore(activity) {
+            override fun invokeMsg(message: Int) {
+                App.app.dbSessionManager.invalidateDaoSession()
+                super.invokeMsg(message)
+            }
+        })
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
