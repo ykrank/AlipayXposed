@@ -7,4 +7,6 @@
     <!-- Backup -->
     <string name="pref_key_backup_backup" translatable="false">pref_key_backup_backup</string>
     <string name="pref_key_backup_restore" translatable="false">pref_key_backup_restore</string>
+
+    <string name="pref_key_write_to_xls" translatable="false">pref_key_write_to_xls</string>
 </resources>

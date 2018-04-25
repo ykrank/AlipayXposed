@@ -8,6 +8,7 @@ import com.github.ykrank.alipayxposed.App
 import com.github.ykrank.alipayxposed.BuildConfig
 import com.github.ykrank.alipayxposed.R
 import com.github.ykrank.alipayxposed.app.business.BillDetail
+import com.github.ykrank.alipayxposed.app.data.xls.Poi
 import com.github.ykrank.alipayxposed.bridge.AppSettingContentValues
 import com.github.ykrank.androidtools.extension.toast
 import com.github.ykrank.androidtools.ui.LibBasePreferenceFragment
@@ -28,6 +29,7 @@ class AppPreferenceFragment : LibBasePreferenceFragment(), Preference.OnPreferen
         addPreferencesFromResource(R.xml.preference_app)
 
         findPreference(getString(R.string.pref_key_parse_bill)).onPreferenceClickListener = this
+        findPreference(getString(R.string.pref_key_write_to_xls)).onPreferenceClickListener = this
         findPreference(getString(R.string.pref_key_backup_backup)).onPreferenceClickListener = this
         findPreference(getString(R.string.pref_key_backup_restore)).onPreferenceClickListener = this
 
@@ -55,6 +57,10 @@ class AppPreferenceFragment : LibBasePreferenceFragment(), Preference.OnPreferen
                         .subscribe({
                             BillDetail.parseFromRawJson(it)
                         }, L::e, { activity.toast("Parse success") })
+                return true
+            }
+            getString(R.string.pref_key_write_to_xls) -> {
+                RxJavaUtil.workInRxIoThread { Poi.readXls(activity) }
                 return true
             }
             getString(R.string.pref_key_backup_backup) -> {

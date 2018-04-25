@@ -20,6 +20,11 @@
         android:title="@string/pref_parse_bill" />
 
     <Preference
+        android:key="@string/pref_key_write_to_xls"
+        android:persistent="false"
+        android:title="@string/pref_write_to_xls" />
+
+    <Preference
         android:key="@string/pref_key_backup_backup"
         android:persistent="false"
         android:title="@string/pref_backup_backup" />
