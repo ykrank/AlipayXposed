@@ -1,10 +1,12 @@
 package com.github.ykrank.alipayxposed.app.business
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.github.ykrank.alipayxposed.App
 import com.github.ykrank.alipayxposed.app.data.db.dbmodel.BillDetailsRaw
+import java.util.*
 
 
 @JsonIgnoreProperties(ignoreUnknown = false)
@@ -23,7 +25,7 @@ class BillDetail {
      * 交易订单金额
      */
     @JsonIgnore
-    var price: String? = null
+    var price: Double = 0.0
     /**
      * 交易订单状态
      */
@@ -37,7 +39,8 @@ class BillDetail {
     @JsonProperty("账单分类")
     var billClass: String? = null
     @JsonProperty("创建时间")
-    var createTime: String? = null
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "GMT+8")
+    var createTime: Date? = null
     @JsonProperty("订单号")
     var orderNum: String? = null
     @JsonProperty("商户订单号")
@@ -136,7 +139,7 @@ class BillDetail {
             val billDetail = App.app.objectMapper.readValue(raw.rawJson, BillDetail::class.java)
             billDetail.tradeNo = raw.tradeNo
             billDetail.header = raw.header
-            billDetail.price = raw.price
+            billDetail.price = raw.price.toDouble()
             billDetail.status = Status.values().find {
                 it.content == raw.status
             }

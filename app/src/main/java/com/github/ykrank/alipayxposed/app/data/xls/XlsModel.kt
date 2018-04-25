@@ -74,6 +74,8 @@ class XlsModel {
     }
 
     companion object {
+        val EMPTY = XlsModel()
+
         val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA)
         /**
          * 字段在Excel中的列编号（从0开始）
