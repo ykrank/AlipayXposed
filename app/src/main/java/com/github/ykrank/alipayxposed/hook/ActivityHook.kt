@@ -12,7 +12,7 @@ object ActivityHook {
 
     fun hookStart() {
         XposedHelpers.findAndHookMethod(Activity::class.java, "startActivity",
-                Intent::class, Bundle::class, object : XC_MethodHook() {
+                Intent::class.java, Bundle::class.java, object : XC_MethodHook() {
             override fun beforeHookedMethod(param: XC_MethodHook.MethodHookParam) {
                 XposedBridge.log("startActivity:" + param.thisObject)
                 XposedBridge.log("args:" + Arrays.asList(param.args))
