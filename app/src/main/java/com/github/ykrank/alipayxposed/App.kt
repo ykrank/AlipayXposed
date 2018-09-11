@@ -32,6 +32,8 @@ class App : MultiDexApplication() {
                 get() = "AlipayXposed"
             override val appR: Class<out Any>
                 get() = R::class.java
+            override val itemModelBRid: Int
+                get() = BR.model
         })
 
         L.init(this)

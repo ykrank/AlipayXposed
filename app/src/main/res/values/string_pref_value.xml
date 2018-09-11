@@ -3,6 +3,7 @@
     <!-- General -->
     <string name="pref_enable">启用Hook</string>
     <string name="pref_debug_bill_detail">订单详情不退出</string>
+    <string name="pref_show_raw_bill">显示原始订单数据</string>
     <string name="pref_parse_bill">解析订单数据</string>
 
     <string name="pref_write_to_xls">写到Excel中</string>

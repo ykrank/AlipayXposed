@@ -28,6 +28,7 @@ class AppPreferenceFragment : LibBasePreferenceFragment(), Preference.OnPreferen
     override fun onCreatePreferences(bundle: Bundle?, s: String?) {
         addPreferencesFromResource(R.xml.preference_app)
 
+        findPreference(getString(R.string.pref_key_show_raw_bill)).onPreferenceClickListener = this
         findPreference(getString(R.string.pref_key_parse_bill)).onPreferenceClickListener = this
         findPreference(getString(R.string.pref_key_write_to_xls)).onPreferenceClickListener = this
         findPreference(getString(R.string.pref_key_backup_backup)).onPreferenceClickListener = this
@@ -50,6 +51,10 @@ class AppPreferenceFragment : LibBasePreferenceFragment(), Preference.OnPreferen
 
     override fun onPreferenceClick(preference: Preference?): Boolean {
         when (preference?.key) {
+            getString(R.string.pref_key_show_raw_bill) -> {
+                RawBillDetailListActivity.start(activity)
+                return true
+            }
             getString(R.string.pref_key_parse_bill) -> {
                 App.app.billDb.getAllList()
                         .compose(RxJavaUtil.iOTransformer())
@@ -60,7 +65,7 @@ class AppPreferenceFragment : LibBasePreferenceFragment(), Preference.OnPreferen
                 return true
             }
             getString(R.string.pref_key_write_to_xls) -> {
-                RxJavaUtil.workInRxIoThread { Poi.readXls(activity) }
+                RxJavaUtil.workWithUiThread({ Poi.readXls(activity, "AlipayBill.xls") }, { activity.toast("保存在下载文件夹的AlipayBill.xls") })
                 return true
             }
             getString(R.string.pref_key_backup_backup) -> {

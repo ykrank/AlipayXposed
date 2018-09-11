@@ -3,6 +3,13 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'org.greenrobot.greendao'
 
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+def storefile = properties.getProperty('storeFile')
+def storepassword = properties.getProperty('storePassword')
+def keyalias = properties.getProperty('keyAlias')
+def keypassword = properties.getProperty('keyPassword')
+
 android {
     compileSdkVersion 27
     defaultConfig {
@@ -16,6 +23,14 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+    signingConfigs {
+        release {
+            storeFile file(storefile)
+            storePassword storepassword
+            keyAlias keyalias
+            keyPassword keypassword
+        }
     }
     dataBinding {
         enabled = true
@@ -41,10 +56,12 @@ android {
     buildTypes {
         debug {
             multiDexEnabled true
+            signingConfig signingConfigs.release
         }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     buildTypes.each {

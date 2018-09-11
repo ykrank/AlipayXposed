@@ -12,7 +12,7 @@ import java.util.*
 object Poi {
     const val Assets_Xls = "template.xls"
 
-    fun readXls(context: Context) {
+    fun readXls(context: Context, fileName:String) {
         try {
             val fs = NPOIFSFileSystem(context.assets.open(Assets_Xls))
             val wb = HSSFWorkbook(fs.root, true)
@@ -34,7 +34,7 @@ object Poi {
             xlsModel.writeToRow(secondRow)
 
             val dir = FileUtil.getDownloadDirectory(context)
-            val file = File(dir, "test.xls")
+            val file = File(dir, fileName)
             wb.write(file)
         } catch (e: Exception) {
             e.printStackTrace()

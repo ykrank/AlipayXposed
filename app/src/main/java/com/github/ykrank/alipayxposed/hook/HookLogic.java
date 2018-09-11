@@ -17,6 +17,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
  */
 
 public class HookLogic implements IXposedHookLoadPackage {
+    private final static String TAG = "Xposed";
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam loadPackageParam) throws Throwable {
@@ -33,13 +34,29 @@ public class HookLogic implements IXposedHookLoadPackage {
                         protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                             String className = (String) param.args[0];
                             if (className.contains("de.robv.android.xposed")) {
-                                XposedBridge.log("ClassLoader loadClass xposed:" + className);
-                                param.setResult(null);
+                                //找到检测代码位置用，
+//                                Log.w(TAG, "ClassLoader loadClass xposed:" + className);
+//                                Log.w(TAG, new Exception());
+                                //实际代码
+//                                if (className.equals("de.robv.android.xposed.XposedHelpers")) {
+//                                    Log.w(TAG, new Exception());
+//                                }
                             }
                         }
                     });
-            //Application
+            if (XposedHelpers.findClass("com.alipay.mobile.base.security.CI", classLoader) != null) {
+                //移除检测
+                XposedHelpers.findAndHookMethod("com.alipay.mobile.base.security.CI", classLoader, "a",
+                        ClassLoader.class, String.class, new XC_MethodHook() {
+                            @Override
+                            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                                XposedBridge.log("Alipay security.CI");
+                                param.setResult((byte) 0);
+                            }
+                        });
+            }
             if (loadPackageParam.isFirstApplication) {
+                //Application
                 XposedHelpers.findAndHookMethod(Application.class, "onCreate",
                         new XC_MethodHook() {
                             @Override
@@ -52,6 +69,7 @@ public class HookLogic implements IXposedHookLoadPackage {
                                 }
                             }
                         });
+                H5BridgeHook.INSTANCE.hookLoadH5Bridge(classLoader);
             }
             //壳中真正的加载类
             XposedHelpers.findAndHookMethod("dalvik.system.DexFile", classLoader, "loadClass",
@@ -71,11 +89,10 @@ public class HookLogic implements IXposedHookLoadPackage {
                             }
                         }
                     });
-            //Hook nebula
-            H5BridgeHook.INSTANCE.hookLoadH5Bridge(classLoader);
 
 //            FragmentHook.INSTANCE.hookCommit(loadPackageParam.classLoader);
 //            H5UiHook.hookH5FragmentManager(loadPackageParam.classLoader);
+
         }
     }
 }

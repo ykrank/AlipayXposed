@@ -7,6 +7,7 @@ import android.os.Build;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -89,7 +90,11 @@ public class HookLoader implements IXposedHookLoadPackage {
         Class<?> cls = Class.forName(handleHookClass, true, pathClassLoader);
         Object instance = cls.newInstance();
         Method method = cls.getDeclaredMethod(handleHookMethod, XC_LoadPackage.LoadPackageParam.class);
-        method.invoke(instance, loadPackageParam);
+        try {
+            method.invoke(instance, loadPackageParam);
+        } catch (InvocationTargetException e){
+            e.getTargetException().printStackTrace();
+        }
     }
 
     /**
