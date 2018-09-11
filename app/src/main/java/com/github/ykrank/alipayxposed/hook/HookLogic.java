@@ -32,7 +32,7 @@ public class HookLogic implements IXposedHookLoadPackage {
                         @Override
                         protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                             String className = (String) param.args[0];
-                            if (className.contains("xposed")) {
+                            if (className.contains("de.robv.android.xposed")) {
                                 XposedBridge.log("ClassLoader loadClass xposed:" + className);
                                 param.setResult(null);
                             }
