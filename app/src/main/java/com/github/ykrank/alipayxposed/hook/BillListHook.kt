@@ -29,6 +29,7 @@ object BillListHook {
                 AppSettingContentValues.doIfEnable {
                     //                XposedBridge.log(Exception("BillListAdapter"))
 //                XposedBridge.log("AddAll:${param.args[0]}")
+                    XposedBridge.log("BillListAdapter")
                     (param.args[0] as Collection<Any>).forEach {
                         HookedApp.billSingleListItems[it] = true
                     }
@@ -47,7 +48,7 @@ object BillListHook {
         XposedHelpers.findAndHookMethod(Cls_BillListActivity, classLoader, "onResume",
                 object : XC_MethodHook() {
                     override fun afterHookedMethod(param: MethodHookParam) {
-                        //XposedBridge.log("BillListActivity onResume")
+                        XposedBridge.log("BillListActivity onResume")
                         HookedApp.billListActivityResume = true
                         HookedApp.billListActivity = WeakReference(param.thisObject)
                         AppSettingContentValues.doIfEnable {
@@ -79,6 +80,7 @@ object BillListHook {
         XposedHelpers.findAndHookMethod(Cls_BillListActivity, classLoader, "onPause",
                 object : XC_MethodHook() {
                     override fun afterHookedMethod(param: MethodHookParam) {
+                        XposedBridge.log("BillListActivity onPause")
                         HookedApp.billListActivityResume = false
                     }
                 })
@@ -103,7 +105,7 @@ object BillListHook {
      */
     fun goNextH5(): Boolean? {
         if (HookedApp.billListActivityResume) {
-//            XposedBridge.log("billSingleListItems: ${HookedApp.billSingleListItems.size}")
+            XposedBridge.log("billSingleListItems: ${HookedApp.billSingleListItems.size}")
             HookedApp.billSingleListItems.keys.find {
                 !isItemParsed(it)
             }?.apply {
@@ -151,8 +153,10 @@ object BillListHook {
      */
     fun goBillH5Page(item: Any) {
         val activity = HookedApp.billListActivity?.get()
+        XposedBridge.log("goBillH5Page: $item")
         if (activity != null) {
-            //c(SingleListItem)
+            //item的点击事件，可以通过BillListAdapter中setOnClickListener找到
+            //BillListAdapterListner.c(SingleListItem) 实际实现是BillListActivity
             try {
                 XposedHelpers.callMethod(activity, "c", item)
             } catch (e: Throwable) {

@@ -28,22 +28,22 @@ public class HookLogic implements IXposedHookLoadPackage {
             ClassLoader classLoader = loadPackageParam.classLoader;
 
             //防止支付宝检测xposed，如果没用到插件，应该移除这里
-            XposedHelpers.findAndHookMethod("java.lang.ClassLoader", classLoader, "loadClass",
-                    String.class, boolean.class, new XC_MethodHook() {
-                        @Override
-                        protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                            String className = (String) param.args[0];
-                            if (className.contains("de.robv.android.xposed")) {
-                                //找到检测代码位置用，
+//            XposedHelpers.findAndHookMethod("java.lang.ClassLoader", classLoader, "loadClass",
+//                    String.class, boolean.class, new XC_MethodHook() {
+//                        @Override
+//                        protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+//                            String className = (String) param.args[0];
+//                            if (className.contains("de.robv.android.xposed")) {
+            //找到检测代码位置用，
 //                                Log.w(TAG, "ClassLoader loadClass xposed:" + className);
 //                                Log.w(TAG, new Exception());
-                                //实际代码
+            //实际代码
 //                                if (className.equals("de.robv.android.xposed.XposedHelpers")) {
 //                                    Log.w(TAG, new Exception());
 //                                }
-                            }
-                        }
-                    });
+//                            }
+//                        }
+//                    });
             if (XposedHelpers.findClass("com.alipay.mobile.base.security.CI", classLoader) != null) {
                 //移除检测
                 XposedHelpers.findAndHookMethod("com.alipay.mobile.base.security.CI", classLoader, "a",
@@ -71,7 +71,7 @@ public class HookLogic implements IXposedHookLoadPackage {
                         });
                 H5BridgeHook.INSTANCE.hookLoadH5Bridge(classLoader);
             }
-            //壳中真正的加载类
+            //壳中真正的加载类，因为分包的原因，有些类会在之后懒加载
             XposedHelpers.findAndHookMethod("dalvik.system.DexFile", classLoader, "loadClass",
                     String.class, "java.lang.ClassLoader", new XC_MethodHook() {
                         @Override
@@ -89,6 +89,16 @@ public class HookLogic implements IXposedHookLoadPackage {
                             }
                         }
                     });
+            //这个和上面不会同时发生
+            if (XposedHelpers.findClass(UcWebViewClientHook.UC_WEBVIEW_CLIENT_API_CLASS, classLoader) != null) {
+                XposedBridge.log("Hook class:" + UcWebViewClientHook.UC_WEBVIEW_CLIENT_API_CLASS);
+                UcWebViewClientHook.INSTANCE.hookLoadWebViewClient(classLoader);
+            }
+            if (XposedHelpers.findClass(BillListHook.Cls_BillListActivity, classLoader) != null) {
+                XposedBridge.log("Hook class:" + BillListHook.Cls_BillListActivity);
+                BillListHook.INSTANCE.hookBillList(classLoader);
+            }
+
 
 //            FragmentHook.INSTANCE.hookCommit(loadPackageParam.classLoader);
 //            H5UiHook.hookH5FragmentManager(loadPackageParam.classLoader);
