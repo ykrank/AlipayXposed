@@ -19,3 +19,11 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+# Keep fragment name
+-keepnames class com.github.ykrank.alipayxposed.** implements android.support.v4.app.Fragment
+-keepnames class com.github.ykrank.alipayxposed.** implements android.app.Fragment
+
+# Jackson Model
+-keep public class com.github.ykrank.alipayxposed.app.business.** { *; }
+# GreenDao model
+-keep public class com.github.ykrank.alipayxposed.app.data.db.dbmodel.** { *; }

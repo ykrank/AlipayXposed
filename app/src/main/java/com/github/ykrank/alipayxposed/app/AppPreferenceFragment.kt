@@ -61,7 +61,10 @@ class AppPreferenceFragment : LibBasePreferenceFragment(), Preference.OnPreferen
                         .flatMap { Observable.fromIterable(it) }
                         .subscribe({
                             BillDetail.parseFromRawJson(it)
-                        }, L::e, { activity.toast("Parse success") })
+                        }, {
+                            L.e(it)
+                            activity.toast(it.message)
+                        }, { activity.toast("Parse success") })
                 return true
             }
             getString(R.string.pref_key_write_to_xls) -> {

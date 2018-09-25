@@ -119,6 +119,8 @@ class BillDetail {
     var withdrawInstruction: String? = null
     @JsonProperty("提现到")
     var withdrawTo: String? = null
+    @JsonProperty("放款说明")
+    var loanStatement: String? = null
 
 
     enum class Status(val content: String) {
@@ -127,7 +129,8 @@ class BillDetail {
         Status_Wait_Delivery("等待确认收货"),
         Repayment_Success("还款成功"),
         Refund_Success("退款成功"),
-        Transfer_Success("转出成功")
+        Transfer_Success("转出成功"),
+        Loan_Success("放款成功")
     }
 
     companion object {
