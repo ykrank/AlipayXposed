@@ -1,6 +1,7 @@
 package com.github.ykrank.alipayxposed.app.contentprovider
 
 import android.content.ContentValues
+import android.content.Context
 import android.database.Cursor
 import android.net.Uri
 import com.github.ykrank.alipayxposed.App
@@ -11,8 +12,13 @@ import com.github.ykrank.alipayxposed.bridge.BillH5ContentValues
 import com.github.ykrank.androidtools.util.L
 
 object BillContentProviderDelegate : ContentProviderDelegate {
+
     override val tableName: String
         get() = AlipayContentProvider.Table_BILL_H5
+
+    override fun setContext(context: Context) {
+
+    }
 
     override fun insert(uri: Uri, values: ContentValues): Uri? {
         val tradeNo = BillH5ContentValues.getTradeNo(values)

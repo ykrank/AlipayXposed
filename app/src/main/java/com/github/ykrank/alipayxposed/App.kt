@@ -1,5 +1,6 @@
 package com.github.ykrank.alipayxposed
 
+import android.content.Context
 import android.support.multidex.MultiDexApplication
 import android.support.v7.preference.PreferenceManager
 import com.facebook.stetho.Stetho
@@ -18,7 +19,6 @@ class App : MultiDexApplication() {
 
     val objectMapper = ObjectMapper()
 
-    lateinit var appPref: AppPreferences
     lateinit var billDb: BillDetailsRawDbWrapper
     lateinit var dbSessionManager:AppDaoSessionManager
 
@@ -38,9 +38,6 @@ class App : MultiDexApplication() {
 
         L.init(this)
 
-        val pref = PreferenceManager.getDefaultSharedPreferences(this)
-        appPref = AppPreferencesManager(AppPreferencesImpl(this, pref))
-
         val dbHelper = AppDaoOpenHelper(this, BuildConfig.DB_NAME)
         dbSessionManager = AppDaoSessionManager(dbHelper)
         billDb = BillDetailsRawDbWrapper(dbSessionManager)
@@ -50,5 +47,10 @@ class App : MultiDexApplication() {
 
     companion object {
         lateinit var app: App
+
+        fun getPref(context: Context): AppPreferences {
+            val pref = PreferenceManager.getDefaultSharedPreferences(context)
+            return AppPreferencesManager(AppPreferencesImpl(context, pref))
+        }
     }
 }

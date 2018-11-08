@@ -30,6 +30,9 @@ class AlipayContentProvider : ContentProvider() {
     }
 
     override fun onCreate(): Boolean {
+        delegates.forEach {
+            it.setContext(context!!)
+        }
         return true
     }
 

@@ -3,6 +3,7 @@ package com.github.ykrank.alipayxposed.bridge
 import android.database.Cursor
 import android.database.MatrixCursor
 import com.github.ykrank.alipayxposed.App
+import com.github.ykrank.alipayxposed.app.data.pref.AppPreferences
 import com.github.ykrank.alipayxposed.hook.HookedApp
 
 class AppSetting {
@@ -11,7 +12,7 @@ class AppSetting {
 
     fun toCursor(): Cursor {
         return MatrixCursor(arrayOf(Key_Enable, Key_DebugBillDetails)).apply {
-            addRow(arrayOf(if (App.app.appPref.enable) 1 else 0, if (App.app.appPref.debugBillDetail) 1 else 0))
+            addRow(arrayOf(if (enable) 1 else 0, if (debugBillDetail) 1 else 0))
         }
     }
 
@@ -22,17 +23,17 @@ class AppSetting {
         /**
          * 只有App进程才能调用
          */
-        fun fromPref(): AppSetting {
+        fun fromPref(appPref: AppPreferences): AppSetting {
             val setting = AppSetting()
-            setting.enable = App.app.appPref.enable
-            setting.debugBillDetail = App.app.appPref.debugBillDetail
+            setting.enable = appPref.enable
+            setting.debugBillDetail =appPref.debugBillDetail
             return setting
         }
 
         /**
          * 可远程调用
          */
-        fun remoteQuery():AppSetting?{
+        fun remoteQuery(): AppSetting? {
             val cursor = HookedApp.app?.contentResolver?.query(AppSettingContentValues.getTableUri(),
                     null, null, null, null)
             if (cursor != null) {

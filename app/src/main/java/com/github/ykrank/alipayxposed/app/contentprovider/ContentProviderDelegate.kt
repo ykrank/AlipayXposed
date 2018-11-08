@@ -1,6 +1,7 @@
 package com.github.ykrank.alipayxposed.app.contentprovider
 
 import android.content.ContentValues
+import android.content.Context
 import android.database.Cursor
 import android.net.Uri
 
@@ -9,6 +10,8 @@ interface ContentProviderDelegate{
      * 表名
      */
     val tableName:String
+
+    fun setContext(context: Context)
 
     /**
      * @see android.content.ContentProvider.insert
