@@ -90,11 +90,11 @@ public class HookLogic implements IXposedHookLoadPackage {
                         }
                     });
             //这个和上面不会同时发生
-            if (XposedHelpers.findClass(UcWebViewClientHook.UC_WEBVIEW_CLIENT_API_CLASS, classLoader) != null) {
+            if (XposedHelpers.findClassIfExists(UcWebViewClientHook.UC_WEBVIEW_CLIENT_API_CLASS, classLoader) != null) {
                 XposedBridge.log("Hook class:" + UcWebViewClientHook.UC_WEBVIEW_CLIENT_API_CLASS);
                 UcWebViewClientHook.INSTANCE.hookLoadWebViewClient(classLoader);
             }
-            if (XposedHelpers.findClass(BillListHook.Cls_BillListActivity, classLoader) != null) {
+            if (XposedHelpers.findClassIfExists(BillListHook.Cls_BillListActivity, classLoader) != null) {
                 XposedBridge.log("Hook class:" + BillListHook.Cls_BillListActivity);
                 BillListHook.INSTANCE.hookBillList(classLoader);
             }
